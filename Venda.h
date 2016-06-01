@@ -12,9 +12,13 @@
 #include "Produtos.h"
 #include "Clientes.h"
 
+#define idVendaFidelidade 2
+#define idVendaAvulsa 1 
+
 void funcaoVenda();
 int vendaAvulsa();
 int vendaFidelidade();
+int vendaProdutos(int tipoVenda);
 int menuVenda = -1 ;
 void funcaoVenda(){
 
@@ -63,23 +67,94 @@ void funcaoVenda(){
 
 
 int vendaAvulsa() {
-	
-	if (idProduto > 0)
-	{
-
-		int id;
-		char yn, maisVenda = 'Y' ;
-		float numVenda, valorRecebido, valorVenda, trocoVenda;
-		while (maisVenda == 'Y')
-		{
-			system("cls");
+				system("cls");
 			printf("###############################################################################\n");
 			printf("#                                                                             #\n");
 			printf("############################# Efetuar Venda Avulsa ############################\n");
 			printf("#                                                                             #\n");
 			printf("###############################################################################\n");
+			vendaProdutos(idVendaAvulsa);
+			return 1;
+}
 
+int vendaFidelidade(){
 
+	if (ClientesCadastrados > 0)
+	{
+		//int foundCpf = 0 , foundEmail;
+		int   id = -1 ;
+		int * pont = &id ;
+		char busca[100];
+		printf("\n*Insira o CPF/CNPJ ou Email do Cliente: \n");
+		fflush(stdin);
+		fgets(busca, 100, stdin);
+
+		//Buscando o id do cliente atraves do parametro 'out'= pont da função
+		if (!existeCpfCnpj(busca, pont) || !existeMail(busca, pont))
+		{
+			id = *pont;
+
+			printf("\nNome: %s", Cli[id].NomeCliente);
+			printf("CPF/CNPJ: %s", Cli[id].CPFCliente);
+			printf("Email: %s", Cli[id].emailCliente);
+			
+			char yn;
+			printf("\Confirma os Dados do Cliente? (Y/N)\n");
+			getchar();
+			scanf_s("%c", &yn);
+			yn = toupper(yn);
+
+			if (yn == 'Y')
+			{
+				vendaProdutos(idVendaFidelidade);
+			}
+			else
+			{
+				return 0;
+			}
+			
+		}
+		else
+		{
+			printf("**Cliente não cadastrado***");
+			system("pause");
+		}
+
+	}
+	else
+	{
+	//	ClientesCadastrados = 0;
+		printf("\n**Nenhum Cliente cadastrado**\n\n");
+		char yn;
+		printf("\nDeseja Cadastrar Cliente? (Y/N)\n");
+		getchar();
+		scanf_s("%c", &yn);
+
+		yn = toupper(yn);
+		if (yn == 'Y')
+		{
+			MenuCadastroCliente();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	return 1;
+
+}
+
+int vendaProdutos( int tipoVenda){
+
+	if (idProduto > 0)
+	{
+		system("cls");
+		int id;
+		char yn, maisVenda = 'Y';
+		float numVenda, valorRecebido, valorVenda, trocoVenda;
+
+		while (maisVenda == 'Y')
+		{
 			//Tratamento para retorno do Id, para trabalhar variavel no indice da struct
 			id = pesquisaProduto() - 1;
 			if (id == -3) break;
@@ -116,13 +191,28 @@ int vendaAvulsa() {
 							//Açao do Caixa
 							printf("\n**Venda Confirmada**\n\n");
 							prod[id].qntProduto -= numVenda;
-		
-							printf("\Deseja efetuar nova Venda Avulsa? (Y/N)\n");
-							getchar();
-							scanf("%c", &maisVenda);
-							yn = toupper(maisVenda);
-							if (maisVenda == 'Y') continue; 
-							else break;
+
+							//Venda para cliente fidelidade
+							if (tipoVenda == idVendaFidelidade)
+							{
+								return valorVenda;
+							}
+							else if (tipoVenda == idVendaAvulsa)
+							{
+								printf("\Deseja efetuar nova Venda Avulsa? (Y/N)\n");
+								getchar();
+								scanf("%c", &maisVenda);
+								yn = toupper(maisVenda);
+							}
+							if (maisVenda == 'Y')
+							{
+
+								continue;
+							}
+							else
+							{
+								break;
+							}
 						}
 						else
 						{
@@ -155,7 +245,7 @@ int vendaAvulsa() {
 			}
 		}
 	}
-	else 
+	else
 	{
 		printf("\n**Nenhum produto cadastrado**\n\n");
 		char yn;
@@ -173,37 +263,7 @@ int vendaAvulsa() {
 			return 0;
 		}
 	}
-	return 0;
-}
-
-int vendaFidelidade(){
-
-	if (ClientesCadastrados > 0)
-	{
-		printf("\n*Insira o CPF/CNPJ do Cliente: %d\n", Cli[0].IDCliente);
-		system("pause");
-	}
-	else
-	{
-	//	ClientesCadastrados = 0;
-		printf("\n**Nenhum Cliente cadastrado**\n\n");
-		char yn;
-		printf("\nDeseja Cadastrar Cliente? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
-		{
-			MenuCadastroCliente();
-		}
-		else
-		{
-			return 0;
-		}
-	}
 	return 1;
-
 }
 
 #endif

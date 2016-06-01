@@ -30,8 +30,8 @@ int  ClientesCadastrados = 0;
 void MenuCadastroCliente();     
 void MenuAcharCliente();        
 void MenuHistoricoCliente();
-bool existeCpfCnpj(char * cpf);
-bool existeMail(char * email);
+bool existeCpfCnpj(char * cpf, int * id); // id 0 para exibição de mensagem de invalidez
+bool existeMail(char * email, int * id); // id 0 para exibição de mensagem de invalidez
 
 struct Clientes * Cli;
 
@@ -86,7 +86,7 @@ void MenuCadastroCliente() {
 		if (Cli[ClientesCadastrados].CPFCliente[0] == 'x')  break;
 		if (validaNomeClie(Cli[ClientesCadastrados].NomeCliente) && validaEmail(Cli[ClientesCadastrados].emailCliente) && validaTel(Cli[ClientesCadastrados].TelefoneCliente) && validaCpfCnpj(Cli[ClientesCadastrados].CPFCliente) )
 		{
-			if (existeMail(Cli[ClientesCadastrados].emailCliente) && existeCpfCnpj(Cli[ClientesCadastrados].CPFCliente))
+			if (existeMail(Cli[ClientesCadastrados].emailCliente, 0) && existeCpfCnpj(Cli[ClientesCadastrados].CPFCliente, 0))
 			{
 				
 				Cli[ClientesCadastrados].IDCliente = ClientesCadastrados + 1;
@@ -134,7 +134,7 @@ void MenuCadastroCliente() {
 
 
 
-bool existeCpfCnpj(char * cpf){
+bool existeCpfCnpj(char * cpf, int * id){
 
 	int  i;
 
@@ -142,7 +142,15 @@ bool existeCpfCnpj(char * cpf){
 	{
 		if (strcmp(cpf, Cli[i].CPFCliente) == 0)
 		{
-			printf("\n***O CPF/CNPJ informado já esta cadastrado para o Cliente: %s***\n", Cli[i].NomeCliente);
+			if (id == 0)
+			{
+				printf("\n***O CPF/CNPJ informado já esta cadastrado para o Cliente: %s***\n", Cli[i].NomeCliente);
+			}
+
+			*id = i; // passando o ID do cliente cujo dado foi encontrado
+
+			//printf("id p: %d  id v: %d i: %d\n",&id , id, i);
+			//system("pause");
 			return false;
 		}
 	}
@@ -150,7 +158,7 @@ bool existeCpfCnpj(char * cpf){
 	return true;
 }
 
-bool existeMail(char * email){
+bool existeMail(char * email, int * id){
 
 	int  i;
 
@@ -158,7 +166,14 @@ bool existeMail(char * email){
 	{
 		if (strcmp(email, Cli[i].emailCliente) == 0)
 		{
-			printf("\n***O EMAIL informado já esta cadastrado para o Cliente: %s***\n", Cli[i].NomeCliente);
+			
+			if (id == 0)
+			{
+				printf("\n***O EMAIL informado já esta cadastrado para o Cliente: %s***\n", Cli[i].NomeCliente);
+			}
+			 * id =  i ;
+			 // passando o ID do cliente cujo dado foi encontrado
+
 			return false;
 		}
 	}

@@ -58,7 +58,7 @@ void convertToUpper(char * string){
 		}
 		else 
 		{
-			string[i] = toupper(string[i]);
+		string[i] = toupper(string[i]);
 		}
 	}
 }
