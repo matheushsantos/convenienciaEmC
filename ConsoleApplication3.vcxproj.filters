@@ -32,5 +32,8 @@
     <ClInclude Include="Clientes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Caixa.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

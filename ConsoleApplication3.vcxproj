@@ -82,6 +82,7 @@
   <ItemGroup>
     <ClInclude Include="Clientes.h" />
     <ClInclude Include="Funcoes.h" />
+    <ClInclude Include="Caixa.h" />
     <ClInclude Include="Produtos.h" />
     <ClInclude Include="Venda.h" />
   </ItemGroup>

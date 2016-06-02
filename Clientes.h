@@ -39,7 +39,6 @@ struct Clientes * Cli;
 
 void MenuCadastroCliente() {
 
-
 	//fflush(stdin);
 	int continua = 1;
 	while (continua == 1)
@@ -90,6 +89,8 @@ void MenuCadastroCliente() {
 			{
 				
 				Cli[ClientesCadastrados].IDCliente = ClientesCadastrados + 1;
+				Cli[ClientesCadastrados].TotalGasto = 0;
+				Cli[ClientesCadastrados].TotalVendas = 0;
 				printf("\nCliente Cadastrado, ID do Cliente:  %d\n", Cli[ClientesCadastrados].IDCliente);
 				ClientesCadastrados++ ;
 			}

@@ -11,6 +11,7 @@
 #include "Funcoes.h"
 #include "Produtos.h"
 #include "Clientes.h"
+#include "Caixa.h"
 
 #define idVendaFidelidade 2
 #define idVendaAvulsa 1 
@@ -18,7 +19,7 @@
 void funcaoVenda();
 int vendaAvulsa();
 int vendaFidelidade();
-int vendaProdutos(int tipoVenda);
+float vendaProdutos(int tipoVenda);
 int menuVenda = -1 ;
 void funcaoVenda(){
 
@@ -78,7 +79,12 @@ int vendaAvulsa() {
 }
 
 int vendaFidelidade(){
-
+	system("cls");
+	printf("###############################################################################\n");
+	printf("#                                                                             #\n");
+	printf("############################# Efetuar Venda Fidelidade ########################\n");
+	printf("#                                                                             #\n");
+	printf("###############################################################################\n");
 	if (ClientesCadastrados > 0)
 	{
 		//int foundCpf = 0 , foundEmail;
@@ -93,24 +99,40 @@ int vendaFidelidade(){
 		if (!existeCpfCnpj(busca, pont) || !existeMail(busca, pont))
 		{
 			id = *pont;
-
+				
 			printf("\nNome: %s", Cli[id].NomeCliente);
 			printf("CPF/CNPJ: %s", Cli[id].CPFCliente);
 			printf("Email: %s", Cli[id].emailCliente);
 			
 			char yn;
 			printf("\Confirma os Dados do Cliente? (Y/N)\n");
-			getchar();
+			//getchar();
 			scanf_s("%c", &yn);
-			yn = toupper(yn);
 
-			if (yn == 'Y')
+			yn = toupper(yn);
+			while (yn == 'Y')
 			{
-				vendaProdutos(idVendaFidelidade);
-			}
-			else
-			{
-				return 0;
+				if (yn == 'Y')
+				{
+					//system("cls");
+					float x = vendaProdutos(idVendaFidelidade);
+					if (x > 0)
+					{
+						printf("\Deseja efetuar nova venda para o Cliente Id: %d ? (Y/N)\n", Cli[id].IDCliente);
+						getchar();
+						scanf_s("%c", &yn);
+						yn = toupper(yn);
+						Cli[id].TotalVendas++;
+						Cli[id].TotalGasto += x;
+					}
+				}
+				else
+				{
+					printf("\n**Venda Cancelada**\n");
+					system("pause");
+					return 0;
+				}
+
 			}
 			
 		}
@@ -144,105 +166,114 @@ int vendaFidelidade(){
 
 }
 
-int vendaProdutos( int tipoVenda){
+float vendaProdutos(int tipoVenda){
 
 	if (idProduto > 0)
 	{
-		system("cls");
-		int id;
-		char yn, maisVenda = 'Y';
-		float numVenda, valorRecebido, valorVenda, trocoVenda;
 
-		while (maisVenda == 'Y')
+		if (caixa[diaAtual].aberto)
 		{
-			//Tratamento para retorno do Id, para trabalhar variavel no indice da struct
-			id = pesquisaProduto() - 1;
-			if (id == -3) break;
-			//Retorno da pesquisaProduto -1 se nao encontrar produtos
-			if (id != -2)
+			system("cls");
+			int id;
+			char yn, maisVenda = 'Y';
+			float numVenda, valorRecebido, valorVenda, trocoVenda;
+
+			while (maisVenda == 'Y')
 			{
-				printf("\nQntde de Produtos Vendidos (Unidade/Litro/Kg): ");
-				scanf_s("%f", &numVenda);
-				if ((numVenda > 0) && (numVenda <= prod[id].qntProduto))
+				//Tratamento para retorno do Id, para trabalhar variavel no indice da struct
+				id = pesquisaProduto() - 1;
+				if (id == -3) break;
+				//Retorno da pesquisaProduto -1 se nao encontrar produtos
+				if (id != -2)
 				{
-					//Calculo da Venda
-
-					valorVenda = (prod[id].valor * numVenda);
-					printf("\nValor Venda: R$%.2f * %.2f = R$%.2f\n", prod[id].valor, numVenda, valorVenda);
-
-					printf("\nValor Recebido: R$");
-					scanf_s("%f", &valorRecebido);
-
-					//Troco Cliente
-
-					if (valorRecebido >= valorVenda)
+					printf("\nQntde de Produtos Vendidos (Unidade/Litro/Kg): ");
+					scanf_s("%f", &numVenda);
+					if ((numVenda > 0) && (numVenda <= prod[id].qntProduto))
 					{
-						trocoVenda = (valorRecebido - valorVenda);
-						printf("\nTroco: R$%.2f", trocoVenda);
+						//Calculo da Venda
 
+						valorVenda = (prod[id].valor * numVenda);
+						printf("\nValor Venda: R$%.2f * %.2f = R$%.2f\n", prod[id].valor, numVenda, valorVenda);
 
-						printf("\nConfirma Venda? (Y/N)\n");
-						getchar();
-						scanf_s("%c", &yn);
+						printf("\nValor Recebido: R$");
+						scanf_s("%f", &valorRecebido);
 
-						yn = toupper(yn);
-						if (yn == 'Y')
+						//Troco Cliente
+
+						if (valorRecebido >= valorVenda)
 						{
-							//Açao do Caixa
-							printf("\n**Venda Confirmada**\n\n");
-							prod[id].qntProduto -= numVenda;
+							trocoVenda = (valorRecebido - valorVenda);
+							printf("\nTroco: R$%.2f", trocoVenda);
 
-							//Venda para cliente fidelidade
-							if (tipoVenda == idVendaFidelidade)
-							{
-								return valorVenda;
-							}
-							else if (tipoVenda == idVendaAvulsa)
-							{
-								printf("\Deseja efetuar nova Venda Avulsa? (Y/N)\n");
-								getchar();
-								scanf("%c", &maisVenda);
-								yn = toupper(maisVenda);
-							}
-							if (maisVenda == 'Y')
+
+							printf("\nConfirma Venda? (Y/N)\n");
+							getchar();
+							scanf_s("%c", &yn);
+
+							yn = toupper(yn);
+							if (yn == 'Y')
 							{
 
-								continue;
+								printf("\n**Venda Confirmada**\n\n");
+								prod[id].qntProduto -= numVenda;
+								caixa[diaAtual].totalVendaDia += valorVenda;
+								caixa[diaAtual].numVendaDia++;
+								//Venda para cliente fidelidade
+								if (tipoVenda == idVendaFidelidade)
+								{
+									return valorVenda;
+								}
+								else if (tipoVenda == idVendaAvulsa)
+								{
+									printf("\Deseja efetuar nova Venda Avulsa? (Y/N)\n");
+									getchar();
+									scanf("%c", &maisVenda);
+									maisVenda = toupper(maisVenda);
+								}
+								if (maisVenda == 'Y')
+								{
+									system("cls");
+									continue;
+								}
+								else
+								{
+									break;
+								}
 							}
 							else
 							{
-								break;
+								maisVenda = 'N';
+								system("cls");
+								printf("\n**Venda Cancelada**\n");
+								system("pause");
+
+								return 0;
 							}
 						}
 						else
 						{
-							maisVenda = 'N';
 							system("cls");
-							printf("\n**Venda Cancelada**\n");
+							printf("\n**Venda cancelada**\n**Valor insuficiente para completar a venda**\n");
 							system("pause");
-
 							return 0;
 						}
 					}
 					else
 					{
 						system("cls");
-						printf("\n**Venda cancelada**\n**Valor insuficiente para completar a venda**\n");
+						printf("\n**Venda cancelada quantidade indisponivel no momento**\n");
 						system("pause");
-						return 0;
 					}
-				}
-				else
-				{
-					system("cls");
-					printf("\n**Venda cancelada quantidade indisponivel no momento**\n");
-					system("pause");
-				}
-				//getchar();
+					//getchar();
 
-				//getchar();
-				return 1;
+					//getchar();
+					return 0;
+				}
 			}
+		}
+		else
+		{
+			abriDia();
 		}
 	}
 	else
@@ -260,10 +291,10 @@ int vendaProdutos( int tipoVenda){
 		}
 		else
 		{
-			return 0;
+				return 0;
 		}
 	}
-	return 1;
+return 0;
 }
 
 #endif

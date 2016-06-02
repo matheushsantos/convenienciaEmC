@@ -10,16 +10,18 @@
 #include "Produtos.h"
 #include "Venda.h"
 #include "Clientes.h"
+#include "Caixa.h"
 
 //#include "Include.cpp"
 
 void funcaoProduto();
-//void funcaoVenda();
 
-int main(){
+
+int main()
+{
 
 	setlocale(LC_ALL, "Portuguese");
-		
+
 	int menuPrincipal;
 	while (true)
 	{
@@ -42,6 +44,7 @@ int main(){
 		printf("#          1 - Para Vendas                                                    #\n");
 		printf("#          2 - Para Clientes                                                  #\n");
 		printf("#          3 - Para Produtos                                                  #\n");
+		printf("#          4 - Para Caixa                                                     #\n");
 		printf("#          0 - Para Sair                                                      #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
@@ -64,10 +67,14 @@ int main(){
 			funcaoProduto();
 			break;
 		}
+		case (4) :
+		{
+			FuncaoCaixa();
+			break;
+		}
 		case (0) :
 		{
 			exit(0);
-			//FuncaoCaixa();
 			break;
 		}
 		default:
