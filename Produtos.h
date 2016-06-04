@@ -7,7 +7,8 @@
 #include <locale.h>
 #include <stdbool.h>
 
-//#include "Funcoes.h"
+#include "Funcoes.h"
+#include "Caixa.h"
 //#include "Clientes.h"
 //#include "Venda.h"
 
@@ -32,7 +33,7 @@ void funcaoProduto();
 void estoqueProdutos();
 int menuCadastrarProduto();
 int menuAlterarValorProduto();
-void menuAlterarTaxa();
+bool menuAlterarTaxa();
 int listarCategoria();
 int listarGeral();
 int entradaProd();
@@ -41,7 +42,6 @@ struct Produtos * prod;
 
 /*Variaveis de controle*/
 int idProduto = 0;
-float lucroProd = 0;
 /*Functions*/
 
 void funcaoProduto()
@@ -56,7 +56,7 @@ void funcaoProduto()
 		printf("############################# Menu de Produtos ################################\n");
 		printf("#                                                                             #\n");
 		printf("#         1 - Para acessar o estoque                                          #\n");
-		printf("#         2 - Para Cadastrar um produto                                       #\n");
+		printf("#         2 - Para Cadastrar (Adquirir) produto                               #\n");
 		printf("#         3 - Para alterar o valor de algum produto                           #\n");
 		printf("#         4 - Para alterar o valor da taxa de lucro                           #\n");
 		printf("#         0 - Para retornar ao menu principal                                 #\n");
@@ -165,69 +165,125 @@ void estoqueProdutos()
 
 int menuCadastrarProduto(){
 
-	int continua = 1;
-	while (continua)
+	if (getCaixa())
 	{
-
-		system("cls");
-		printf("###############################################################################\n");
-		printf("#                                                                             #\n");
-		printf("############################ Cadastro de Produto ##############################\n");
-		printf("#                                                                             #\n");
-		printf("###############################################################################\n");
-
-		//############################## ALOCANDO MEMÓRIA##############################################
-		if (idProduto == 0)
+		bool continua = true;
+		while (continua)
 		{
-			prod = (struct Produtos *)malloc(sizeof(struct Produtos));
 
-		}
-		else if (idProduto >= 1)
-		{
-			prod = (struct Produtos *)realloc(prod, (idProduto + 1)*sizeof(struct Produtos));
-		}
-		//############################################################################################
-		printf("\n****0- Para Cancelar****\n");
-		printf("\n*** Id Produto: %d ***\n", idProduto + 1);
-		printf("Nome do Prod.: ");
-		fflush(stdin);
-		fgets(prod[idProduto].nomeProduto, 100, stdin);
-		if (prod[idProduto].nomeProduto[0] == '0') return 0;
-		convertToUpper(prod[idProduto].nomeProduto);/*Função Criada para Converter String p/ UpperCase*/
-		printf("\nNome do Fornecedor/Marca: ");
-		fflush(stdin);
-		fgets(prod[idProduto].fornecedor, 100, stdin);
-		if (prod[idProduto].fornecedor[0] == '0') return 0;
-		convertToUpper(prod[idProduto].fornecedor);
-		printf("\nValor de Tabela: R$");
-		scanf_s("%f", &prod[idProduto].valor);
-		if (prod[idProduto].valor == 0) return 0;
-		printf("\nQndt Produtos: ");
-		scanf_s("%d", &prod[idProduto].qntProduto);
-		if (prod[idProduto].qntProduto == 0)  return 0;
-		printf("Categoria do Produto: \n1-Combustivel\n2-Bebida\n3-Alimentos\n4-Diversos\n");
-		scanf_s("%d", &prod[idProduto].categoria);
-		if (prod[idProduto].categoria == 0) return 0;
-		if (validarNomePrd(prod[idProduto].nomeProduto) && validarNomePrd(prod[idProduto].fornecedor) && (prod[idProduto].valor > 0) && (prod[idProduto].qntProduto >= 0) && (validaCat(prod[idProduto].categoria)))
-		{
-			prod[idProduto].id = idProduto + 1;
-			printf("\nId: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
-			getchar();
+			system("cls");
+			printf("###############################################################################\n");
+			printf("#                                                                             #\n");
+			printf("############################ Cadastro de Produto ##############################\n");
+			printf("#                                                                             #\n");
+			printf("###############################################################################\n");
+
+			//############################## ALOCANDO MEMÓRIA##############################################
+			if (idProduto == 0)
+			{
+				prod = (struct Produtos *)malloc(sizeof(struct Produtos));
+
+			}
+			else if (idProduto >= 1)
+			{
+				prod = (struct Produtos *)realloc(prod, (idProduto + 1)*sizeof(struct Produtos));
+			}
+			//############################################################################################
+
+			/*Mensagens de Auxilio*/
+			printf("\n****0- Para Cancelar****\n");
+			printf("\n*** Id Produto: %d ***\n", idProduto + 1);
+
+			/*NOME DO PRODUTO*/
+			printf("Nome do Prod.: ");
+			fflush(stdin);
+			fgets(prod[idProduto].nomeProduto, 100, stdin);
+			if (prod[idProduto].nomeProduto[0] == '0') return 0;
+			if (!validarNomePrd(prod[idProduto].nomeProduto, comMensagemDeErro)) return 0;
+
+			/*Função Criada para Converter String p/ UpperCase*/
+			convertToUpper(prod[idProduto].nomeProduto);
+
+			/*Fornecedor*/
+			printf("\nNome do Fornecedor/Marca: ");
+			fflush(stdin);
+			fgets(prod[idProduto].fornecedor, 100, stdin);
+			if (prod[idProduto].fornecedor[0] == '0') return 0;
+			if (!validarNomePrd(prod[idProduto].fornecedor, comMensagemDeErro)) return 0;
+			convertToUpper(prod[idProduto].fornecedor);
+
+			/*Valor do Produto recebido*/
+			printf("\nValor de Tabela: R$");
+			scanf_s("%f", &prod[idProduto].valor);
+			if (prod[idProduto].valor == 0) return 0;
+			if (prod[idProduto].valor < 0)
+			{
+				error("Valor do Produto Inválido");
+				return 0;
+			}
+
+			/*Quantidade de Produtos*/
+			printf("\nQndt Produtos: ");
+			scanf_s("%d", &prod[idProduto].qntProduto);
+			if (prod[idProduto].qntProduto == 0)  return 0;
+			if (prod[idProduto].qntProduto < 0)
+			{
+				error("Quantidade de Produtos Inválida");
+				return 0;
+			}
+
+			/*Categoria do Produto*/
+			printf("Categoria do Produto: \n1-Combustivel\n2-Bebida\n3-Alimentos\n4-Diversos\n");
+			scanf_s("%d", &prod[idProduto].categoria);
+			if (prod[idProduto].categoria == 0) return 0;
+			if (!validaCat(prod[idProduto].categoria, comMensagemDeErro)) return 0;
+
+
+			/*Calculo para descontar produtos do caixa*/
+
+			float totalEntrada = 0;
+			totalEntrada = prod[idProduto].qntProduto * prod[idProduto].qntProduto;
+			printf("\nConfirma baixa de R$%.2f no caixa? (Y/N)\n", totalEntrada);
+			if (confirmacao(" ", 'Y', semMensagemDeErro))
+			{
+				caixa[diaAtual].entradaDiaria -= totalEntrada;
+			}
+			else
+			{
+				error("Cadastro cancelado");
+				return 0;
+			}
+
+
 			idProduto++;
+			prod[idProduto].id = idProduto;
+
+			printf("\nId do Cliente: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
+			system("pause");
+
+			if (!confirmacao("Deseja efetuar um novo cadastro? (Y/N)", 'Y', comMensagemDeErro))
+			{
+				continua = true;
+			}
+			else
+			{
+				continua = false;
+			}
+		}
+		return 1;
+	}
+	else
+	{
+		error("O caixa encontra-se fechado");
+		if (confirmacao("Deseja abrir o caixa? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			abriDia();
 		}
 		else
 		{
-			/*Mensagem pra invalidar cadastro*/
-			printf("**Cadastro nao concluido**\n");
+			error("Retorno ");
 		}
-		printf("Press: Qualquer Tecla - Cadastrar/Recadastrar Produto\n");
-		printf("Press: 0 - Retornar ao Menu de Produtos\n");
-		scanf_s("%d", &continua);
-		if (continua == 0) return 0;
-
 	}
-	return 1;
-
 }
 
 int menuAlterarValorProduto()
@@ -314,105 +370,6 @@ int menuAlterarValorProduto()
 	return 1;
 }
 
-void menuAlterarTaxa()
-{
-	float auxTaxa;
-	char yn;
-	system("cls");
-	printf("###############################################################################\n");
-	printf("#                                                                             #\n");
-	printf("######################## Alterar taxa de lucro ################################\n");
-	printf("#                                                                             #\n");
-	printf("###############################################################################\n");
-	if (lucroProd == 0)
-	{
-
-		printf("\n**Taxa nao cadastrada**\n\nDeseja Cadastrar Taxa de Lucro? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
-		{
-			printf("Insira o percentual da taxa: (Ex. 2.2%%): ");
-			scanf_s("%f", &auxTaxa);
-			if (auxTaxa > 0)
-			{
-				printf("Confirma inclusao de: %.2f%% de taxa (Y/N)\n", auxTaxa);
-				getchar();
-				scanf_s("%c", &yn);
-				yn = toupper(yn);
-
-				if (yn == 'Y')
-				{
-					lucroProd = auxTaxa;
-					system("cls");
-					printf("**Inclusao Confirmada: %.2f%% de Taxa**\n", lucroProd);
-					getchar();
-					getchar();
-				}
-				else
-				{
-					system("cls");
-					printf("**Inclusao Cancelada**");
-					getchar();
-					getchar();
-				}
-			}
-		}
-		else
-		{
-			system("cls");
-			printf("**Inclusao Cancelada**");
-			getchar();
-			getchar();
-		}
-	}
-	else
-	{
-		printf("\nValor da Taxa atual: %.2f%%\nDeseja alterar valor atual? (Y/N)\n", lucroProd);
-		getchar();
-		scanf_s("%c", &yn);
-		yn = toupper(yn);
-
-		if (yn == 'Y')
-		{
-			printf("Insira novo valor de taxa: (2.2%%): ");
-			scanf_s("%f", &auxTaxa);
-			if (auxTaxa > 0)
-			{
-				printf("Confirma alteracao de: %.2f%% para: %.2f%% da taxa? (Y/N)\n", lucroProd, auxTaxa);
-				getchar();
-				scanf_s("%c", &yn);
-				yn = toupper(yn);
-
-				if (yn == 'Y')
-				{
-					lucroProd = auxTaxa;
-					system("cls");
-					printf("**Alteracao Confirmada: %.2f%% de Taxa**", lucroProd);
-					getchar();
-					getchar();
-				}
-				else
-				{
-					system("cls");
-					printf("**Alteracao Cancelada**");
-					getchar();
-					getchar();
-				}
-			}
-		}
-		else
-		{
-			system("cls");
-			printf("**Alteracao Cancelada**");
-			getchar();
-			getchar();
-		}
-	}
-
-}
 
 
 int listarCategoria(){
@@ -636,7 +593,7 @@ int saidaProd(){
 
 			printf("Insira qntd Saida: ");
 			scanf_s("%d", &qnt);
-			if (qnt > 0)
+			if (qnt > 0 || ( (prod[codProd].qntProduto - qnt) >=0 ) )
 			{
 				char yn;
 				printf("\nConfirma saida de: %d ao Produto (Y/N)\n", qnt);
@@ -659,6 +616,11 @@ int saidaProd(){
 					getchar();
 				}
 
+			}
+			else
+			{
+				printf("**Alteração Cancelada\nValores Insuficientes**");
+				system("pause");
 			}
 		}
 		else

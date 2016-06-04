@@ -14,6 +14,7 @@
 //#include "Venda.h"
 
 
+
 struct Clientes
 {
 	char NomeCliente[100];
@@ -66,25 +67,35 @@ void MenuCadastroCliente() {
 		//############################################################################################
 
 		
-		//printf("Insira os dados do cliente!\n\n");
+		/*Informações dos clientes para cadastro*/
+
+		/*Nome*/
 		printf("Insira o nome do cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].NomeCliente, 100, stdin);
 		if (Cli[ClientesCadastrados].NomeCliente[0] == 'x')  break;
+		if (!validaNomeClie(Cli[ClientesCadastrados].NomeCliente, comMensagemDeErro)) break;
+
+		/*E-mail*/
 		printf("\nInsira o email do cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].emailCliente, 50, stdin);
 		if (Cli[ClientesCadastrados].emailCliente[0] == 'x')  break;
+		if (!validaEmail(Cli[ClientesCadastrados].emailCliente, comMensagemDeErro)) break;;
+
+		/*Telefone do Cliente*/
 		printf("\n**Somente Numeros**\nInsira o telefone do cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].TelefoneCliente, 20, stdin);
 		if (Cli[ClientesCadastrados].TelefoneCliente[0] == 'x')  break;
+		if (!validaTel(Cli[ClientesCadastrados].TelefoneCliente, comMensagemDeErro)) break;
+
 		printf("\n**Somente Numeros**\nInsira o CPF/CNPJ do Cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].CPFCliente,20, stdin);
 		if (Cli[ClientesCadastrados].CPFCliente[0] == 'x')  break;
-		if (validaNomeClie(Cli[ClientesCadastrados].NomeCliente) && validaEmail(Cli[ClientesCadastrados].emailCliente) && validaTel(Cli[ClientesCadastrados].TelefoneCliente) && validaCpfCnpj(Cli[ClientesCadastrados].CPFCliente) )
-		{
+		if (!validaCpfCnpj(Cli[ClientesCadastrados].CPFCliente, comMensagemDeErro)) break;
+		
 			if (existeMail(Cli[ClientesCadastrados].emailCliente, 0) && existeCpfCnpj(Cli[ClientesCadastrados].CPFCliente, 0))
 			{
 				
@@ -99,12 +110,8 @@ void MenuCadastroCliente() {
 				printf("\n***Cadastro Invalidado***\n");
 				system("pause");
 			}
-		}
-		else
-		{
-			printf("\n***Cadastro Invalidado***\n");
-			system("pause");
-		}
+
+
 		printf("\nDeseja cadastrar/recadastrar um novo cliente?");
 		printf("\n 1 - sim  /  0 - nao:  ");
 		scanf_s("%d", &continua);
@@ -145,13 +152,11 @@ bool existeCpfCnpj(char * cpf, int * id){
 		{
 			if (id == 0)
 			{
-				printf("\n***O CPF/CNPJ informado já esta cadastrado para o Cliente: %s***\n", Cli[i].NomeCliente);
+				error( strcat("O CPF/CNPJ informado já esta cadastrado para o Cliente: ", Cli[i].NomeCliente) );
 			}
 
-			*id = i; // passando o ID do cliente cujo dado foi encontrado
-
-			//printf("id p: %d  id v: %d i: %d\n",&id , id, i);
-			//system("pause");
+			*id = i; 
+			// passando o ID do cliente cujo dado foi encontrado
 			return false;
 		}
 	}
@@ -170,7 +175,7 @@ bool existeMail(char * email, int * id){
 			
 			if (id == 0)
 			{
-				printf("\n***O EMAIL informado já esta cadastrado para o Cliente: %s***\n", Cli[i].NomeCliente);
+				error( strcat("O EMAIL informado já esta cadastrado para o Cliente: ", Cli[i].NomeCliente) ) ;
 			}
 			 * id =  i ;
 			 // passando o ID do cliente cujo dado foi encontrado

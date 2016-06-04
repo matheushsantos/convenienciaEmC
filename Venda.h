@@ -64,9 +64,6 @@ void funcaoVenda(){
 		}
 	}
 }
-
-
-
 int vendaAvulsa() {
 				system("cls");
 			printf("###############################################################################\n");
@@ -110,6 +107,12 @@ int vendaFidelidade(){
 			scanf_s("%c", &yn);
 
 			yn = toupper(yn);
+			if (yn != 'Y')
+			{
+				printf("\n**Valor Invalido**\n");
+				system("pause");
+				return 0;
+			}
 			while (yn == 'Y')
 			{
 				if (yn == 'Y')
@@ -139,7 +142,22 @@ int vendaFidelidade(){
 		else
 		{
 			printf("**Cliente não cadastrado***");
-			system("pause");
+			char yn;
+			printf("\nDeseja Cadastrar Cliente? (Y/N)\n");
+			getchar();
+			scanf_s("%c", &yn);
+
+			yn = toupper(yn);
+			if (yn == 'Y')
+			{
+				MenuCadastroCliente();
+			}
+			else
+			{
+				printf("**Valor Invalido**");
+				system("pause");
+				return 0;
+			}
 		}
 
 	}
@@ -170,109 +188,129 @@ float vendaProdutos(int tipoVenda){
 
 	if (idProduto > 0)
 	{
-
-		if (caixa[diaAtual].aberto)
+		if (diaAtual >= 0)
 		{
-			system("cls");
-			int id;
-			char yn, maisVenda = 'Y';
-			float numVenda, valorRecebido, valorVenda, trocoVenda;
-
-			while (maisVenda == 'Y')
+			if (caixa[diaAtual].aberto)
 			{
-				//Tratamento para retorno do Id, para trabalhar variavel no indice da struct
-				id = pesquisaProduto() - 1;
-				if (id == -3) break;
-				//Retorno da pesquisaProduto -1 se nao encontrar produtos
-				if (id != -2)
+				system("cls");
+				int id;
+				char yn, maisVenda = 'Y';
+				float numVenda, valorRecebido, valorVenda, trocoVenda;
+
+				while (maisVenda == 'Y')
 				{
-					printf("\nQntde de Produtos Vendidos (Unidade/Litro/Kg): ");
-					scanf_s("%f", &numVenda);
-					if ((numVenda > 0) && (numVenda <= prod[id].qntProduto))
+					valorVenda = 0;
+					valorRecebido = 0;
+					trocoVenda = 0;
+					numVenda = 0;
+					//Tratamento para retorno do Id, para trabalhar variavel no indice da struct
+					id = pesquisaProduto() - 1;
+					if (id == -3) break;
+					//Retorno da pesquisaProduto -1 se nao encontrar produtos
+					if (id != -2)
 					{
-						//Calculo da Venda
-
-						valorVenda = (prod[id].valor * numVenda);
-						printf("\nValor Venda: R$%.2f * %.2f = R$%.2f\n", prod[id].valor, numVenda, valorVenda);
-
-						printf("\nValor Recebido: R$");
-						scanf_s("%f", &valorRecebido);
-
-						//Troco Cliente
-
-						if (valorRecebido >= valorVenda)
+						printf("\nQntde de Produtos Vendidos (Unidade/Litro/Kg): ");
+						scanf_s("%f", &numVenda);
+						if ((numVenda > 0) && (numVenda <= prod[id].qntProduto))
 						{
-							trocoVenda = (valorRecebido - valorVenda);
-							printf("\nTroco: R$%.2f", trocoVenda);
-
-
-							printf("\nConfirma Venda? (Y/N)\n");
-							getchar();
-							scanf_s("%c", &yn);
-
-							yn = toupper(yn);
-							if (yn == 'Y')
+							//Calculo da Venda
+							if (lucroProd > 0)
 							{
+								valorVenda = ((prod[id].valor * lucroProd) + prod[id].valor) * numVenda;
+							}
+							else
+							{
+								valorVenda = (prod[id].valor * numVenda);
+							}
+							printf("\nValor Venda: R$%.2f * %.2f = R$%.2f\n", prod[id].valor, numVenda, valorVenda);
 
-								printf("\n**Venda Confirmada**\n\n");
-								prod[id].qntProduto -= numVenda;
-								caixa[diaAtual].totalVendaDia += valorVenda;
-								caixa[diaAtual].numVendaDia++;
-								//Venda para cliente fidelidade
-								if (tipoVenda == idVendaFidelidade)
+							printf("\nValor Recebido: R$");
+							scanf_s("%f", &valorRecebido);
+
+							//Troco Cliente
+
+							if (valorRecebido >= valorVenda)
+							{
+								trocoVenda = (valorRecebido - valorVenda);
+								printf("\nTroco: R$%.2f", trocoVenda);
+
+
+								printf("\nConfirma Venda? (Y/N)\n");
+								getchar();
+								scanf_s("%c", &yn);
+
+								yn = toupper(yn);
+								if (yn == 'Y')
 								{
-									return valorVenda;
-								}
-								else if (tipoVenda == idVendaAvulsa)
-								{
-									printf("\Deseja efetuar nova Venda Avulsa? (Y/N)\n");
-									getchar();
-									scanf("%c", &maisVenda);
-									maisVenda = toupper(maisVenda);
-								}
-								if (maisVenda == 'Y')
-								{
-									system("cls");
-									continue;
+
+									printf("\n**Venda Confirmada**\n\n");
+									prod[id].qntProduto -= numVenda;
+									caixa[diaAtual].totalVendaDia += valorVenda;
+									caixa[diaAtual].numVendaDia++;
+									//Venda para cliente fidelidade
+									if (tipoVenda == idVendaFidelidade)
+									{
+										return valorVenda;
+									}
+									else if (tipoVenda == idVendaAvulsa)
+									{
+										printf("\Deseja efetuar nova Venda Avulsa? (Y/N)\n");
+										getchar();
+										scanf("%c", &maisVenda);
+										maisVenda = toupper(maisVenda);
+									}
+									if (maisVenda == 'Y')
+									{
+										system("cls");
+										continue;
+									}
+									else
+									{
+										break;
+									}
 								}
 								else
 								{
-									break;
+									maisVenda = 'N';
+									system("cls");
+									printf("\n**Venda Cancelada**\n");
+									system("pause");
+
+									return 0;
 								}
 							}
 							else
 							{
-								maisVenda = 'N';
 								system("cls");
-								printf("\n**Venda Cancelada**\n");
+								printf("\n**Venda cancelada**\n**Valor insuficiente para completar a venda**\n");
 								system("pause");
-
 								return 0;
 							}
 						}
 						else
 						{
 							system("cls");
-							printf("\n**Venda cancelada**\n**Valor insuficiente para completar a venda**\n");
+							printf("\n**Venda cancelada quantidade indisponivel no momento**\n");
 							system("pause");
-							return 0;
 						}
-					}
-					else
-					{
-						system("cls");
-						printf("\n**Venda cancelada quantidade indisponivel no momento**\n");
-						system("pause");
-					}
-					//getchar();
+						//getchar();
 
-					//getchar();
-					return 0;
+						//getchar();
+						return 0;
+					}
 				}
+			}
+			else
+			{
+				printf("**Abrir Caixa para Disponbilizar Venda**");
+				system("pause");
+				abriDia();
 			}
 		}
 		else
 		{
+			printf("**Abrir Caixa para Disponbilizar Venda**");
+			system("pause");
 			abriDia();
 		}
 	}

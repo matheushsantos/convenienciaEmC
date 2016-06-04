@@ -79,6 +79,7 @@ int main()
 		}
 		default:
 		{
+
 			system("cls");
 			printf("**Valor Invalido**");
 			getchar();

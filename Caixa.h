@@ -7,12 +7,15 @@
 #include <locale.h>
 #include <stdbool.h>
 
+#include "Funcoes.h"
+
 struct Caixa
 {
+	bool aberto;
 	float totalVendaDia;
 	unsigned int diaAtual;
-	bool aberto;
 	int numVendaDia;
+	float entradaDiaria;
 };
 
 void zerarCaixa();
@@ -21,9 +24,10 @@ void verificarCaixa();
 void fechaCaixa();
 void FuncaoCaixa();
 int abriDia();
+bool getCaixa();
 
 
-int vendasFeitas;
+int vendasFeitas, caixaAbertoTemp;
 float valorTotalVendas, totalVendido;
 struct Caixa * caixa;
 
@@ -88,8 +92,8 @@ void FuncaoCaixa()
 	}
 }
 int abriDia(){
-	int opcao;
-	fflush(stdin);
+
+
 	system("cls");
 	printf("###############################################################################\n");
 	printf("#                                                                             #\n");
@@ -98,112 +102,182 @@ int abriDia(){
 	printf("###############################################################################\n");
 
 	//ssystem("pause");
+	/*Primeira passagem*/
+	if (diaAtual == -1) diaAtual++;
 
-	printf("deseja realmente abrir o dia?, se sim, digite 1:   ");
-	scanf_s("%d", &opcao);
-	if (opcao == 1)
-	{
-		diaAtual++;
-		if (diaAtual == 0)
+		if (confirmacao("\n1 - Abertura de Caixa\n\nQualquer tecla Para cancelamento. . .", '1', comMensagemDeErro))
 		{
-			caixa = (struct Caixa *)malloc(sizeof(struct Caixa));
-			caixa[diaAtual].diaAtual = diaAtual;
-			caixa[diaAtual].aberto = true;
-			caixa[diaAtual].numVendaDia = 0;
-			caixa[diaAtual].totalVendaDia = 0;
-			printf("\n***Caixa Aberto***\n");
-			system("pause");
-			return 1;
+			
+			if (diaAtual == 0)
+			{	
+				if (caixaAbertoTemp == 0)
+				{
+					caixa = (struct Caixa *)malloc(sizeof(struct Caixa));
+					caixa[diaAtual].diaAtual = 1;
+					caixa[diaAtual].aberto = true;
+					caixa[diaAtual].numVendaDia = 0;
+					caixa[diaAtual].totalVendaDia = 0;
+					caixa[diaAtual].entradaDiaria = 0;
+					printf("\n***Caixa Aberto 0***\n      Id: %d\n", caixa[diaAtual].diaAtual);
+					system("pause");
+					if (caixaAbertoTemp == 0) caixaAbertoTemp++;
+					return 1;
+				}
+				else if (caixa[diaAtual].aberto)
+				{
+					if (confirmacao("Caixa atual encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro))
+					{
+						fechaCaixa();
+					}
+					else
+					{
+						error("Retornando ao menu");
+					}
+				}
+				
+
+			}
+			else if (diaAtual >= 1)
+			{
+				if (!caixa[diaAtual].aberto)
+				{
+					caixa = (struct Caixa *)realloc(caixa, (diaAtual + 1)*sizeof(struct Caixa));
+					caixa[diaAtual].diaAtual = diaAtual + 1;
+					caixa[diaAtual].aberto = true;
+					caixa[diaAtual].numVendaDia = 0;
+					caixa[diaAtual].totalVendaDia = 0;
+					caixa[diaAtual].entradaDiaria = 0;
+					printf("\n***Caixa Aberto***\n      Id: %d\n", caixa[diaAtual].diaAtual);
+					system("pause");
+					return 1;
+				}
+				else
+				{
+					if (confirmacao("Caixa anterior encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro))
+					{
+						fechaCaixa();
+					}
+					else
+					{
+						error("Retorno ao Menu");
+					}
+				}
+			}
 
 		}
-		else if (diaAtual >= 1)
+		else
 		{
-			if (!caixa[diaAtual - 1].aberto)
-			{
-				caixa = (struct Caixa *)realloc(caixa, (diaAtual + 1)*sizeof(struct Caixa));
-				caixa[diaAtual].diaAtual = diaAtual;
-				caixa[diaAtual].aberto = true;
-				caixa[diaAtual].numVendaDia = 0;
-				caixa[diaAtual].totalVendaDia = 0;
-				printf("\n***Caixa Aberto***\n");
-				system("pause");
-				return 1;
-			}
-			else
-			{
-				char yn;
-				printf("\Caixa Anterior Aberto, Deseje fechar? (Y/N)\n");
-				getchar();
-				scanf_s("%c", &yn);
+			error("Caixa não foi aberto, retornando ao menu");
+		}
+		return 0;
+}
 
-				yn = toupper(yn);
-				if (yn == 'Y')
+void verificarCaixa(){
+
+	if (getCaixa())
+	{
+
+		system("cls");
+		printf("###############################################################################\n");
+		printf("#                                                                             #\n");
+		printf("######################### Consulta Caixa Diário ###############################\n");
+		printf("#                                                                             #\n");
+		printf("###############################################################################\n");
+
+		printf("\nId do caixa: %d", caixa[diaAtual].diaAtual);
+		printf("\nO valor total de vendas foi de:  %.2f ", caixa[diaAtual].totalVendaDia);
+		printf("\nO numero de vendas até o momento foi de: %d ", caixa[diaAtual].numVendaDia);
+		printf("\nO valor total de gastos com produtos foi de: %.2f", caixa[diaAtual].entradaDiaria);
+		printf("\nO lucro diario está ");
+		if (lucroProd > 0)
+			printf("Habilitado em: %.2f%%\n", lucroProd*100);
+		else
+		{
+			printf("desabilitado");
+			if (confirmacao("\nDeseja ir para tela de Lucro? (Y/N)" , 'Y', comMensagemDeErro))
+			{
+				if (menuAlterarTaxa())
 				{
-					fechaCaixa();
+					error("Taxa cadastrada com sucesso");
 				}
 			}
 		}
+		printf("\nTotal diário: %.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
+		if (confirmacao("Deseja ir para o Fechamento de Caixa? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			fechaCaixa();
+		}
 
 	}
 	else
 	{
-		printf("\n***Valor Invalido***\n");
-		system("pause");
+		if (confirmacao("Caixa encontra-se fechado, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			abriDia();
+		}
+		else
+		{
+			error("Retornando ao menu");
+		}
 	}
-	return 0;
-
 }
-void verificarCaixa()
-{
-	int opcao = 0;
+		
+
+
+void fechaCaixa(){
 	system("cls");
 	printf("###############################################################################\n");
 	printf("#                                                                             #\n");
-	printf("######################### verificar o dia atual ###############################\n");
+	printf("######################### Fechamento de Caixa Diário ##########################\n");
 	printf("#                                                                             #\n");
 	printf("###############################################################################\n");
 
-	printf("\nExibindo total de vendas e total recebido");
-	printf("\nO total arrecadado ate este momento foi de:  %f ", caixa[diaAtual].totalVendaDia);
-	printf("\nO tota de vendas feitas ate este momento foi de: %d ", caixa[diaAtual].numVendaDia);
-
-	printf("\nse quiser ir para o menu de encerramento do caixa, digite 1:  ");
-	scanf_s("%d", &opcao);
-
-	if (opcao == 1)
+	if (diaAtual >=0 && caixa[diaAtual].aberto)
 	{
-		fechaCaixa();
+		//printf("\nDia: %d", diaAtual);
+		printf("\nId do caixa: %d", caixa[diaAtual].diaAtual);
+		printf("\nO valor total de vendas foi de:  %.2f ", caixa[diaAtual].totalVendaDia);
+		printf("\nO numero de vendas até o momento foi de: %d ", caixa[diaAtual].numVendaDia);
+		printf("\nO valor total de gastos com produtos foi de: %.2f", caixa[diaAtual].entradaDiaria);
+		printf("\nO lucro diario está ");
+		if (lucroProd > 0)
+			printf("Habilitado em: %.2f%%\n", lucroProd * 100);
+		else
+		{
+			printf("desabilitado");
+
+		}
+		printf("\nTotal diário: %.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
+		
+		if (confirmacao("Confirma Fechamento Diário? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			caixa[diaAtual].aberto = false;
+			diaAtual++;
+			caixa[diaAtual].aberto = false;
+			error("Caixa Fechado");
+		}
+		else
+		{
+			error("Cancelamento não confirmado");
+		}
 	}
 	else
 	{
-		printf("\n***Valor Invalido***\n");
-		system("pause");
+		if (confirmacao("Não existe um caixa aberto, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			abriDia();
+		}
+		else
+		{
+			error("Retornando ao Menu");
+		}
 	}
 }
 
-void fechaCaixa()
-{
-	char yn;
-	printf("\Confirma Fechamento do Caixa (Y/N)\n");
-	getchar();
-	scanf_s("%c", &yn);
-	yn = toupper(yn);
-	if (yn == 'Y')
-	{
-		printf("\nId do Dia: %d ", diaAtual);
-		printf("\nSua venda deste dia vai ser de:  %.2f", caixa[diaAtual].totalVendaDia);
-		printf("\nTotal de vendas feitas neste dia foi de: %d  \n", caixa[diaAtual].numVendaDia);
-		printf("\n***Caixa fechado***\n");
-		system("pause");
-		caixa[diaAtual].aberto = false;
-	}
-	else
-	{
-		printf("\n***Cancelado fechamento***\n");
-		system("pause");
-	}
+bool getCaixa(){
 
+	if (diaAtual < 0) return false;
+	else if (!caixa[diaAtual].aberto) return false;
+	return true;
 }
-
-
 #endif
