@@ -22,7 +22,7 @@ int main()
 
 	setlocale(LC_ALL, "Portuguese");
 
-	int menuPrincipal;
+	char menuPrincipal[100];
 	while (true)
 	{
 		printf("\n");
@@ -48,42 +48,40 @@ int main()
 		printf("#          0 - Para Sair                                                      #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
-		scanf_s("%d", &menuPrincipal);
+		leituraSwitch(menuPrincipal);
 
-		switch (menuPrincipal)
+		switch (menuPrincipal[0])
 		{
-		case (1) :
+		case ('1') :
 		{
 			funcaoVenda();
 			break;
 		}
-		case (2) :
+		case ('2') :
 		{
-			MenuCadastroCliente();
+			funcaoClientes();
 			break;
 		}
-		case (3) :
+		case ('3') :
 		{
 			funcaoProduto();
 			break;
 		}
-		case (4) :
+		case ('4') :
 		{
 			FuncaoCaixa();
 			break;
 		}
-		case (0) :
+		case ('0') :
 		{
 			exit(0);
 			break;
 		}
 		default:
 		{
-
+			fflush(stdin);
 			system("cls");
-			printf("**Valor Invalido**");
-			getchar();
-			getchar();
+			error("**Valor Inválido**");
 			break;
 		}
 		}

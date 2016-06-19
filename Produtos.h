@@ -34,7 +34,7 @@ void estoqueProdutos();
 int menuCadastrarProduto();
 int menuAlterarValorProduto();
 bool menuAlterarTaxa();
-int listarCategoria();
+int listarCategoria( bool pause);
 int listarGeral();
 int entradaProd();
 int saidaProd();
@@ -46,8 +46,8 @@ int idProduto = 0;
 
 void funcaoProduto()
 {
-	int opcaoMenuProduto = -1;
-	while (opcaoMenuProduto != 0)
+	char opcaoMenuProduto[100];
+	while (opcaoMenuProduto[0] != '0')
 	{
 
 		system("cls");
@@ -62,39 +62,53 @@ void funcaoProduto()
 		printf("#         0 - Para retornar ao menu principal                                 #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
-		scanf_s("%d", &opcaoMenuProduto);
+		leituraSwitch(opcaoMenuProduto);
 
-		switch (opcaoMenuProduto)
+		switch (opcaoMenuProduto[0])
 		{
-		case (1) :
+		case ('1') :
 		{
 			system("cls");
 			estoqueProdutos();
 			//getchar();
 			break;
 		}
-		case (2) :
+		case ('2') :
 		{
 			menuCadastrarProduto();
 			//getchar();
 			break;
 		}
-		case (3) :
+		case ('3') :
 		{
 			system("cls");
 			menuAlterarValorProduto();
 			break;
 		}
-		case (4) :
+		case ('4') :
 		{
 			system("cls");
-			menuAlterarTaxa();
+
+			if (menuAlterarTaxa())
+			{
+				error("Taxa cadastrada com sucesso");
+			}
+			else
+			{
+				error("Taxa não cadastrada");
+			}
+			break;
+		}
+		case ('0') :
+		{
+			//error("Encerrando Menu de Produtos");
 			break;
 		}
 		default:
 		{
-			printf("\n***Valor Invalido***\n");
-			getchar();
+			fflush(stdin);
+			system("cls");
+			error("**Valor Inválido**");
 			break;
 		}
 		}
@@ -105,8 +119,8 @@ void funcaoProduto()
 
 void estoqueProdutos()
 {
-	int menu = -1;
-	while (menu != 0)
+	char menu[100];
+	while (menu[0] != '0')
 	{
 		system("cls");
 		printf("###############################################################################\n");
@@ -120,42 +134,41 @@ void estoqueProdutos()
 		printf("3-Entrada de Produtos\n");
 		printf("4-Baixa de Produtos (Cortesias/Furtos)\n");
 		printf("0-Retorno ao Menu de Produtos\n");
-		scanf_s("%d", &menu);
-		printf("Valor Menu: %d\n", menu);
-		switch (menu)
+		leituraSwitch(menu);
+
+		switch (menu[0])
 		{
-		case (1) :
+		case ('1') :
 		{
 			system("cls");
-			listarCategoria();
+			listarCategoria(true);
 			break;
 		}
-		case (2) :
+		case ('2') :
 		{
 			system("cls");
 			listarGeral();
 			break;
 		}
-		case (3) :
+		case ('3') :
 		{
 			system("cls");
 			entradaProd();
 			break;
 		}
-		case (4) :
+		case ('4') :
 		{
 			system("cls");
 			saidaProd();
 			break;
 		}
-		case(0) :
+		case('0') :
 		{
 			break;
 		}
 		default:
 		{
-			printf("**Valores Invalidos**\n");
-			getchar();
+			error("Valores inválidos");
 			break;
 		}
 
@@ -233,18 +246,27 @@ int menuCadastrarProduto(){
 			}
 
 			/*Categoria do Produto*/
-			printf("Categoria do Produto: \n1-Combustivel\n2-Bebida\n3-Alimentos\n4-Diversos\n");
-			scanf_s("%d", &prod[idProduto].categoria);
-			if (prod[idProduto].categoria == 0) return 0;
-			if (!validaCat(prod[idProduto].categoria, comMensagemDeErro)) return 0;
+			char catAux[100];
+			printf("Categoria do Produto: \n1-Combustivel\n2-Bebida\n3-Alimentos\n4-Diversos\n0-Sair\n");
+			scanf("%s", &catAux);
+
+			int cat = validaCat(catAux, comMensagemDeErro);
+			if (cat == 0)
+			{
+				error("Cadastro Cancelado");
+				return 0;
+			}
+			else prod[idProduto].categoria = cat;
+			//if (prod[idProduto].categoria == 0) return 0;
+
 
 
 			/*Calculo para descontar produtos do caixa*/
 
 			float totalEntrada = 0;
-			totalEntrada = prod[idProduto].qntProduto * prod[idProduto].qntProduto;
+			totalEntrada = prod[idProduto].qntProduto * prod[idProduto].valor;
 			printf("\nConfirma baixa de R$%.2f no caixa? (Y/N)\n", totalEntrada);
-			if (confirmacao(" ", 'Y', semMensagemDeErro))
+			if (confirmacao("", 'Y', semMensagemDeErro))
 			{
 				caixa[diaAtual].entradaDiaria -= totalEntrada;
 			}
@@ -255,13 +277,14 @@ int menuCadastrarProduto(){
 			}
 
 
+			
+			prod[idProduto].id = idProduto+1 ;
+
+			printf("\nId do Produto: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
 			idProduto++;
-			prod[idProduto].id = idProduto;
-
-			printf("\nId do Cliente: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
 			system("pause");
-
-			if (!confirmacao("Deseja efetuar um novo cadastro? (Y/N)", 'Y', comMensagemDeErro))
+			
+			if (confirmacao("Deseja efetuar um novo cadastro/entrada de produto? (Y/N)", 'Y', comMensagemDeErro))
 			{
 				continua = true;
 			}
@@ -275,9 +298,9 @@ int menuCadastrarProduto(){
 	else
 	{
 		error("O caixa encontra-se fechado");
-		if (confirmacao("Deseja abrir o caixa? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja ir para tela de abertura do caixa? (Y/N)", 'Y', comMensagemDeErro))
 		{
-			abriDia();
+			abrirDia();
 		}
 		else
 		{
@@ -286,8 +309,7 @@ int menuCadastrarProduto(){
 	}
 }
 
-int menuAlterarValorProduto()
-{
+int menuAlterarValorProduto(){
 
 	if (idProduto >= 1)
 	{
@@ -300,68 +322,54 @@ int menuAlterarValorProduto()
 		printf("######################## Alterar Valor de Produto #############################\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
-		if (listarCategoria() == 0) return 0;
+		if (listarCategoria(false) == 0) return 0;
 		printf("\n\nInsira o Id do Produto: ");
 		scanf_s("%d", &codProd);
 		if (codProd > 0 && codProd <= idProduto)
 		{
 			codProd--;
 			printf("Nome do Produto: %s", prod[codProd].nomeProduto);
-			//printf("Id do Produto: %d\n", prod[i].id);
-			//printf("Fornecedor: %s", prod[i].fornecedor);
 			printf("Valor Cadastrado: R$%.2f\n", prod[codProd].valor);
 
 			printf("Insira novo preco: R$");
 			scanf_s("%f", &newValue);
 			if (newValue > 0)
 			{
-				char yn;
 				printf("\nConfirma alteracao de: R$%.2f para: R$%.2f ao Produto (Y/N)\n", prod[codProd].valor, newValue);
-				getchar();
-				scanf_s("%c", &yn);
-
-				yn = toupper(yn);
-				if (yn == 'Y')
+				if (confirmacao("", 'Y', semMensagemDeErro))
 				{
 					prod[codProd].valor = newValue;
-					printf("\nValor Atual: R$%.2f\n\n** Alteracao de Confirmada **", prod[codProd].valor);
-					getchar();
-					getchar();
+					printf("\nValor Atual: R$%.2f\n", prod[codProd].valor);
+					error("Alteração confirmada");
 				}
 				else
 				{
-					system("cls");
-					printf("**Alteracao Cancelada**");
-					getchar();
-					getchar();
+					error("Alteração cancelada");
 				}
 
+			}
+			else
+			{
+				error("Preço inválido, favor inserir um valor maior que zero (0)");
 			}
 		}
 		else
 		{
-			printf("\n*** Id Invalido ***\n");
-			getchar();
-			getchar();
-			getchar();
+			error("Id inserido inexistente");
+
 		}
 
 	}
 	else
 	{
-		printf("\n**Nenhum produto cadastrado**\n\n");
-		char yn;
-		printf("\nDeseja Cadastrar Produtos? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
+		printf("\n**Nenhum produto cadastrado**\n");
+		if (confirmacao("Deseja ir para o Cadastro de Produtos? (Y/N)", 'Y', comMensagemDeErro))
 		{
 			menuCadastrarProduto();
 		}
 		else
 		{
+			error("Encaminhamento para tela de produtos não confirmado");
 			return 0;
 		}
 	}
@@ -372,22 +380,26 @@ int menuAlterarValorProduto()
 
 
 
-int listarCategoria(){
+int listarCategoria(bool pause){
 
-	int i, cat;
+	int i;
+	char catAux[100];
 	if (idProduto >= 1)
 	{
 
-		printf("Insera o Id da Categoria:\n1-Combustivel\n2-Bebida\n3-Alimentos\n4-Diversos\n");
-		scanf_s("%d", &cat);
-		if (cat > 0 && cat < 5)
+		printf("Insira o Id da Categoria:\n1-Combustivel\n2-Bebida\n3-Alimentos\n4-Diversos\n0-Sair\n");
+		scanf("%s", &catAux);
+		int cat = validaCat(catAux, comMensagemDeErro);
+		if (cat != 0)
 		{
+			bool auxEncontrou = false;
 
 			system("cls");
 			for (i = 0; i < idProduto; i++)
 			{
 				if (prod[i].categoria == cat)
 				{
+					auxEncontrou = true;
 					printf("Nome do Produto: %s", prod[i].nomeProduto);
 					printf("Id do Produto: %d\n", prod[i].id);
 					printf("Fornecedor: %s", prod[i].fornecedor);
@@ -411,32 +423,35 @@ int listarCategoria(){
 					}
 				}
 			}
-			getchar();
-			getchar();
+			
+			if (auxEncontrou)
+			{
+				if (pause) system("pause");
+				return 1;
+			}
+			else
+			{
+				error("Não foram encontrados produtos com essa categoria");
+				return 0;
+			}
+			
 		}
 		else
-		{
-			printf("\n*** Categoria Invalida ***\n");
-			getchar();
+		{	
 			return 0;
 		}
-
 	}
 	else
 	{
-		printf("**\n\nNenhum produto cadastrado**\n\n");
-		char yn;
-		printf("\nDeseja Cadastrar Produtos? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
+		
+		printf("\n**Nenhum produto cadastrado**\n");
+		if (confirmacao("Deseja ir para o Cadastro de Produtos? (Y/N)", 'Y', comMensagemDeErro))
 		{
 			menuCadastrarProduto();
 		}
 		else
 		{
+			error("Encaminhamento para tela de produtos não confirmado");
 			return 0;
 		}
 	}
@@ -483,16 +498,10 @@ int listarGeral(){
 	}
 	else
 	{
-		printf("\n\n**Nenhum produto cadastro**\n\n");
-		char yn;
-		printf("\nDeseja Cadastrar Produtos? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
+		error("Nenhum produto cadastro");
+		if(confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro))
 		{
-			if (menuCadastrarProduto() == 0) return 0;
+			if (menuCadastrarProduto()) return 0;
 		}
 		else
 		{
@@ -507,62 +516,56 @@ int entradaProd(){
 	if (idProduto >= 1)
 	{
 		printf("#################### ENTRADA DE PRODUTOS ####################\n");
-		if (listarCategoria() == 0) return 0;
+		if (!listarCategoria(false))
+		{
+			//error("Categoria Inválida");
+			return 0;
+		}
 		printf("\n\nInsira o Id do Produto: ");
 		scanf_s("%d", &codProd);
-		if (codProd >= 0 && codProd <= idProduto)
+
+		if (codProd > 0 && codProd <= idProduto)
 		{
 			codProd--;
 			printf("Nome do Produto: %s", prod[codProd].nomeProduto);
-			//printf("Id do Produto: %d\n", prod[i].id);
-			//printf("Fornecedor: %s", prod[i].fornecedor);
 			printf("Qntd Disponivel: %d\n", prod[codProd].qntProduto);
 
 			printf("Insira qntd Entrada: ");
 			scanf_s("%d", &qnt);
 			if (qnt > 0)
 			{
-				char yn;
-				printf("\nConfirma entrada de: %d ao Produto (Y/N)\n", qnt);
-				getchar();
-				scanf_s("%c", &yn);
-
-				yn = toupper(yn);
-				if (yn == 'Y')
+				float totalEntrada = 0;
+				totalEntrada = qnt * prod[codProd].valor;
+				printf("\nConfirma entrada de: %d unid. ao Produto?", qnt);
+				printf("\nConfirma baixa de R$%.2f no caixa? (Y/N)\n", totalEntrada);
+				if (confirmacao("",'Y', semMensagemDeErro))
 				{
+					
+					caixa[diaAtual].entradaDiaria -= totalEntrada;
 					prod[codProd].qntProduto += qnt;
-					printf("\nValor Atual: %d\n\n** Inclusao de Confirmada ** ", prod[codProd].qntProduto);
-					getchar();
-					getchar();
+
+					printf("\nValor Atual de Unid.: %d\n", prod[codProd].qntProduto);
+					error("Entrada Confirmada");
 				}
 				else
 				{
-					system("cls");
-					printf("**Inclusao Cancelada**");
-					getchar();
-					getchar();
+					error("Entrada Cancelada");
 				}
-
+			}
+			else
+			{
+				error("Quantidade Inválida");
 			}
 		}
 		else
 		{
-			printf("\n*** Id Invalido ***\n");
-			getchar();
-			getchar();
-			getchar();
+			error("Id Inválido");
 		}
 	}
 	else
 	{
-		printf("\n\n**Nenhum produto cadastro**\n\n");
-		char yn;
-		printf("\nDeseja Cadastrar Produtos? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
+		error("Nenhum produto cadastro");
+		if (confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro))
 		{
 			menuCadastrarProduto();
 		}
@@ -580,67 +583,53 @@ int saidaProd(){
 	if (idProduto >= 1)
 	{
 		printf("#################### ENTRADA DE PRODUTOS ####################\n");
-		if (listarCategoria() == 0) return 0;
+		if (!listarCategoria(false))
+		{
+			//error("Categoria Inválida");
+			return 0;
+		}
 		printf("\n\nInsira o Id do Produto: ");
 		scanf_s("%d", &codProd);
-		if (codProd >= 0 && codProd <= idProduto)
+
+		if (codProd > 0 && codProd <= idProduto)
 		{
 			codProd--;
 			printf("Nome do Produto: %s", prod[codProd].nomeProduto);
-			//printf("Id do Produto: %d\n", prod[i].id);
-			//printf("Fornecedor: %s", prod[i].fornecedor);
 			printf("Qntd Disponivel: %d\n", prod[codProd].qntProduto);
 
 			printf("Insira qntd Saida: ");
 			scanf_s("%d", &qnt);
-			if (qnt > 0 || ( (prod[codProd].qntProduto - qnt) >=0 ) )
-			{
-				char yn;
+			if (qnt > 0 && ( (prod[codProd].qntProduto - qnt) >= 0 ) )
+			{	
 				printf("\nConfirma saida de: %d ao Produto (Y/N)\n", qnt);
-				getchar();
-				scanf_s("%c", &yn);
-
-				yn = toupper(yn);
-				if (yn == 'Y')
+				if (confirmacao("", 'Y', semMensagemDeErro))
 				{
 					prod[codProd].qntProduto -= qnt;
-					printf("\nValor Atual: %d\n\n** Baixa Confirmada ** ", prod[codProd].qntProduto);
-					getchar();
-					getchar();
+					printf("\nValor Atual: %d\n", prod[codProd].qntProduto);
+					error("Baixa Confirmada");
 				}
 				else
 				{
 					system("cls");
-					printf("**Alteracao Cancelada**");
-					getchar();
-					getchar();
+					error("Baixa Cancelada");
 				}
-
 			}
 			else
 			{
-				printf("**Alteração Cancelada\nValores Insuficientes**");
-				system("pause");
+				error("Alteração Cancelada, valores insuficientes para baixa");
 			}
 		}
 		else
 		{
-			printf("\n*** Id Invalido ***\n");
-			getchar();
-			getchar();
-			getchar();
+			error("Id Invalido");
 		}
 	}
 	else
 	{
-		printf("\n\n**Nenhum produto cadastro**\n\n");
-		char yn;
-		printf("\nDeseja Cadastrar Produtos? (Y/N)\n");
-		getchar();
-		scanf_s("%c", &yn);
-
-		yn = toupper(yn);
-		if (yn == 'Y')
+		error("Nenhum produto cadastro");
+		printf("\n");
+		
+		if (confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro))
 		{
 			menuCadastrarProduto();
 		}

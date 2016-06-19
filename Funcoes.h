@@ -17,6 +17,8 @@
 #define comMensagemDeErro true
 #define semMensagemDeErro false
 
+bool leituraSwitch(char * string);
+
 /*Variaves globais*/
 float lucroProd = 0;
 
@@ -30,29 +32,57 @@ void error(char * mensagem)
 	printf("\n***%s***\n", mensagem);
 	system("pause");
 }
+
+
+bool leituraSwitch(char * string)
+{
+	scanf("%s", string);
+	if (strlen(string) > 1)
+	{
+		string[0] = 'A';
+		return false;
+	}
+	return true;
+}
+
 bool confirmacao(char * msg, char letra, bool mensagem)
 {
 	getchar();
-	char aux ;
+	char aux[100] ;
 	if (mensagem)
 	{
 		//stringSemQuebraLinha(msg);
 		printf("\n%s\n", msg);
 	}
-	scanf("%c", &aux);
+	scanf("%s", &aux);
 
-	aux = toupper(aux);
+	aux[0] = toupper(aux[0]);
 	letra = toupper(letra);
 
-	if (aux == letra)
+	if (strlen(aux) > 1)
+	{
+		if (mensagem)
+		{
+			error("Valor inválido, favor inserir somente um caracter");
+		}
+		fflush(stdin);
+		return false;
+	}
+
+	if (aux[0] == letra)
 	{
 		return true;
 	}
 	else
 	{
+		fflush(stdin);
 		return false;
 	}
 }
+
+
+
+
 
 bool validarNomePrd(char * nome, bool mensagem){
 
@@ -84,17 +114,21 @@ bool validarNomePrd(char * nome, bool mensagem){
 	return true;
 }
 
-bool validaCat(int produto, bool mensagem){
+int validaCat(char * produto, bool mensagem){
 
-	if ((produto == combustivel) || (produto == bebida) || (produto == comida) || (produto == diversos))
+	if (strlen(produto) > 1)
 	{
-		return true;
+		if (mensagem) error("Categoria Inválida");
+		return 0;
 	}
-	if (mensagem)
-	{
-		error("Tipo de Produto Invalido");
-	}
-	return false;
+
+	if ((produto[0] == '1'))		return 1;
+	else if ((produto[0] == '2'))	return 2;
+	else if ((produto[0] == '3'))	return 3;
+	else if ((produto[0] == '4'))	return 4;
+	else if ((produto[0] == '0'))	return 0; //OPÇÃO DE SAIR-CANCELAR 
+	else if (mensagem)				error("Categoria Inválida");
+	return 0;
 }
 
 void convertToUpper(char * string){
@@ -250,8 +284,6 @@ bool validaTel(char* tel, bool mensagem)
 }
 
 
-
-
 bool  menuAlterarTaxa()
 {
 	float auxTaxa;
@@ -261,7 +293,7 @@ bool  menuAlterarTaxa()
 
 		if (confirmacao("Taxa não cadastrada, deseja cadastrar uma taxa de lucro? (Y/N)", 'Y', comMensagemDeErro))
 		{
-			printf("Insira o percentual da taxa: (Ex. 2.2%%): ");
+			printf("Insira o percentual da taxa: (Ex. 20,2 = 20,2%%): ");
 			scanf_s("%f", &auxTaxa);
 			if (auxTaxa > 0)
 			{
@@ -278,26 +310,26 @@ bool  menuAlterarTaxa()
 			}
 			else
 			{
+				fflush(stdin);
 				error("Valor do Lucro deve ser maior que zero (0)");
 				false;
 			}
 		}
 		else
 		{
-			error("Inclusao cancelada");
 			false;
 		}
 	}
 	else
 	{
-		printf("\nValor da Taxa atual: %.2f%%\nDeseja alterar valor atual? (Y/N)\n", lucroProd);
+		printf("\nValor da Taxa atual: %.2f%%\nDeseja alterar valor atual? (Y/N)\n", lucroProd * 100);
 		if (confirmacao("", 'Y', semMensagemDeErro))
 		{
-			printf("Insira novo valor de taxa: (2.2%%): ");
+			printf("Insira novo valor de taxa: (Ex. 2,2 = 2,2%%): ");
 			scanf_s("%f", &auxTaxa);
 			if (auxTaxa > 0)
 			{
-				printf("Confirma alteracao de: %.2f%% para: %.2f%% da taxa? (Y/N)\n", lucroProd, auxTaxa);
+				printf("Confirma alteracao de: %.2f%% para: %.2f%% da taxa? (Y/N)\n", lucroProd * 100, auxTaxa);
 				if (confirmacao("",'Y', semMensagemDeErro))
 				{
 					lucroProd = auxTaxa/100;				
@@ -310,13 +342,13 @@ bool  menuAlterarTaxa()
 			}
 			else
 			{
+				fflush(stdin);
 				error("Valor do Lucro deve ser maior que zero (0)");
 				false;
 			}
 		}
 		else
 		{
-			error("Alteração cancelada");
 			false;
 		}
 	}

@@ -11,11 +11,13 @@
 
 struct Caixa
 {
+
 	bool aberto;
 	float totalVendaDia;
 	unsigned int diaAtual;
 	int numVendaDia;
 	float entradaDiaria;
+	
 };
 
 void zerarCaixa();
@@ -23,7 +25,7 @@ void totalUsado();
 void verificarCaixa();
 void fechaCaixa();
 void FuncaoCaixa();
-int abriDia();
+int abrirDia();
 bool getCaixa();
 
 
@@ -35,11 +37,11 @@ int diaAtual = -1;
 
 void FuncaoCaixa()
 {
-	int funcCaixa = 1, opcaoCaixa;
+	int funcCaixa = 1,opcaoCaixa;
+	char teste[100];
 	while (funcCaixa == 1)
 	{
 		system("cls");
-		fflush(stdin);
 		printf("###############################################################################\n");
 		printf("#                                                                             #\n");
 		printf("############################# Menu de Caixa ###################################\n");
@@ -50,48 +52,47 @@ void FuncaoCaixa()
 		printf("#         0 - Para retornar ao menu principal                                 #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
+		leituraSwitch(teste);
 
-		scanf_s("%d", &opcaoCaixa);
-		switch (opcaoCaixa)
+		switch (teste[0])
 		{
-		case (1) :
+		case ('1') :
 		{
 			//printf("chegou aqui");
 			//system("pause");
-			abriDia();
+			abrirDia();
 			break;
 		}
-		case (2) :
+		case ('2') :
 		{
 			//printf("chegou aqui");
 			//system("pause");
 			verificarCaixa();
 			break;
 		}
-		case (3) :
+		case ('3') :
 		{
 			//printf("chegou aqui");
 			//system("pause");
 			fechaCaixa();
 			break;
 		}
-		case (0) :
+		case ('0') :
 		{
-			printf("**retornando ao menu principal**\n");
+			//error("Encerando Menu do Caixa");
 			funcCaixa = 0;
-			getchar();
 			break;
 		}
 		default:
 		{
-			printf("**insira um valor valido!**\n");
-			getchar();
+			fflush(stdin);
+			error("Valor inválido");
 			break;
 		}
 		}
 	}
 }
-int abriDia(){
+int abrirDia(){
 
 
 	system("cls");
@@ -103,11 +104,11 @@ int abriDia(){
 
 	//ssystem("pause");
 	/*Primeira passagem*/
-	if (diaAtual == -1) diaAtual++;
 
-		if (confirmacao("\n1 - Abertura de Caixa\n\nQualquer tecla Para cancelamento. . .", '1', comMensagemDeErro))
+		if (confirmacao("\nConfirma Abertura de Caixa? (Y/N)\n\nQualquer tecla Para cancelamento. . .", 'Y', comMensagemDeErro))
 		{
-			
+			if (diaAtual == -1) diaAtual++;
+
 			if (diaAtual == 0)
 			{	
 				if (caixaAbertoTemp == 0)
@@ -185,9 +186,9 @@ void verificarCaixa(){
 		printf("###############################################################################\n");
 
 		printf("\nId do caixa: %d", caixa[diaAtual].diaAtual);
-		printf("\nO valor total de vendas foi de:  %.2f ", caixa[diaAtual].totalVendaDia);
+		printf("\nO valor total de vendas foi de:  R$%.2f ", caixa[diaAtual].totalVendaDia);
 		printf("\nO numero de vendas até o momento foi de: %d ", caixa[diaAtual].numVendaDia);
-		printf("\nO valor total de gastos com produtos foi de: %.2f", caixa[diaAtual].entradaDiaria);
+		printf("\nO valor total de gastos com produtos foi de: R$%.2f", caixa[diaAtual].entradaDiaria /**-1*/); //Descomentar caso queira exibir positivo
 		printf("\nO lucro diario está ");
 		if (lucroProd > 0)
 			printf("Habilitado em: %.2f%%\n", lucroProd*100);
@@ -202,7 +203,7 @@ void verificarCaixa(){
 				}
 			}
 		}
-		printf("\nTotal diário: %.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
+		printf("\nTotal diário: R$%.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
 		if (confirmacao("Deseja ir para o Fechamento de Caixa? (Y/N)", 'Y', comMensagemDeErro))
 		{
 			fechaCaixa();
@@ -213,7 +214,7 @@ void verificarCaixa(){
 	{
 		if (confirmacao("Caixa encontra-se fechado, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro))
 		{
-			abriDia();
+			abrirDia();
 		}
 		else
 		{
@@ -265,7 +266,7 @@ void fechaCaixa(){
 	{
 		if (confirmacao("Não existe um caixa aberto, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro))
 		{
-			abriDia();
+			abrirDia();
 		}
 		else
 		{

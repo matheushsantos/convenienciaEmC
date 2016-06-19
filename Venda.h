@@ -20,11 +20,11 @@ void funcaoVenda();
 int vendaAvulsa();
 int vendaFidelidade();
 float vendaProdutos(int tipoVenda);
-int menuVenda = -1 ;
+
 void funcaoVenda(){
 
-	menuVenda = -1;
-	while (menuVenda != 0)
+	char menuVenda[100];
+	while (menuVenda[0] != '0')
 	{
 		system("cls");
 		printf("###############################################################################\n");
@@ -36,29 +36,30 @@ void funcaoVenda(){
 		printf("#         0 - Para Retornar ao Menu Principal                                 #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
-		scanf_s("%d", &menuVenda);
+		leituraSwitch(menuVenda);
 
-		switch (menuVenda)
+		switch (menuVenda[0])
 		{
-		case (1) :
+		case ('1') :
 		{
 			vendaAvulsa();
 			break;
 		}
-		case (2) :
+		case ('2') :
 		{
 			 vendaFidelidade();
 			break;
 		}
-		case (0) :
+		case ('0') :
 		{
-			
+			error("Encerrando Menu de Vendas");
 			break;
 		}
 		default:
 		{
-			printf("**Valores Invalidos**");
-			getchar();
+			fflush(stdin);
+			system("cls");
+			error("**Valor Inválido**");
 			break;
 		}
 		}
@@ -304,14 +305,14 @@ float vendaProdutos(int tipoVenda){
 			{
 				printf("**Abrir Caixa para Disponbilizar Venda**");
 				system("pause");
-				abriDia();
+				abrirDia();
 			}
 		}
 		else
 		{
 			printf("**Abrir Caixa para Disponbilizar Venda**");
 			system("pause");
-			abriDia();
+			abrirDia();
 		}
 	}
 	else
