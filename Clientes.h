@@ -32,12 +32,15 @@ float descUm = 2000, descDois = 5000, descTres = 10000, descQuat = 100000;
 
 int  ClientesCadastrados = 0;
 void funcaoClientes();
+void consultaSaldo();
+void exibirClientes();
 int setupCliente();
 void MenuCadastroCliente();     
 void MenuHistoricoCliente();
+
 bool existeCpfCnpj(char * cpf, int * id); // id 0 para exibição de mensagem de invalidez
 bool existeMail(char * email, int * id); // id 0 para exibição de mensagem de invalidez
-
+bool alteraDescontosCli(char numero);
 struct Clientes * Cli;
 
 void funcaoClientes(){
@@ -71,10 +74,12 @@ void funcaoClientes(){
 		}
 		case('2') :
 		{
+			consultaSaldo();
 			break;
 		}
 		case('3') :
 		{
+			exibirClientes();
 			break;
 		}
 		case('4') :
@@ -131,27 +136,31 @@ void MenuCadastroCliente() {
 		printf("Insira o nome do cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].NomeCliente, 100, stdin);
-		if (Cli[ClientesCadastrados].NomeCliente[0] == 'x')  break;
+		if (Cli[ClientesCadastrados].NomeCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].NomeCliente) <= 2))  break;
 		if (!validaNomeClie(Cli[ClientesCadastrados].NomeCliente, comMensagemDeErro)) break;
+
+		/*DEIXANDO MAIUSCULO*/
+		convertToUpper(Cli[ClientesCadastrados].NomeCliente);
+
 
 		/*E-mail*/
 		printf("\nInsira o email do cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].emailCliente, 50, stdin);
-		if (Cli[ClientesCadastrados].emailCliente[0] == 'x')  break;
-		if (!validaEmail(Cli[ClientesCadastrados].emailCliente, comMensagemDeErro)) break;;
+		if (Cli[ClientesCadastrados].emailCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].emailCliente) <= 2 ))  break;
+		if (!validaEmail(Cli[ClientesCadastrados].emailCliente, comMensagemDeErro)) break;
 
 		/*Telefone do Cliente*/
 		printf("\n**Somente Numeros**\nInsira o telefone do cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].TelefoneCliente, 20, stdin);
-		if (Cli[ClientesCadastrados].TelefoneCliente[0] == 'x')  break;
+		if (Cli[ClientesCadastrados].TelefoneCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].TelefoneCliente) <= 2))  break;
 		if (!validaTel(Cli[ClientesCadastrados].TelefoneCliente, comMensagemDeErro)) break;
 
 		printf("\n**Somente Numeros**\nInsira o CPF/CNPJ do Cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].CPFCliente,20, stdin);
-		if (Cli[ClientesCadastrados].CPFCliente[0] == 'x')  break;
+		if (Cli[ClientesCadastrados].CPFCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].CPFCliente) <= 2))  break;
 		if (!validaCpfCnpj(Cli[ClientesCadastrados].CPFCliente, comMensagemDeErro)) break;
 		
 			if (existeMail(Cli[ClientesCadastrados].emailCliente, 0) && existeCpfCnpj(Cli[ClientesCadastrados].CPFCliente, 0))
@@ -160,7 +169,13 @@ void MenuCadastroCliente() {
 				Cli[ClientesCadastrados].IDCliente = ClientesCadastrados + 1;
 				Cli[ClientesCadastrados].TotalGasto = 0;
 				Cli[ClientesCadastrados].TotalVendas = 0;
-				printf("\nCliente Cadastrado, ID do Cliente:  %d\n", Cli[ClientesCadastrados].IDCliente);
+				system("cls");
+				printf("\nID:\t%d\n", Cli[ClientesCadastrados].IDCliente);
+				printf("Nome:\t%s", Cli[ClientesCadastrados].NomeCliente);
+				printf("CPF:\t%s", Cli[ClientesCadastrados].CPFCliente);
+				printf("E-mail:\t%s\n\n", Cli[ClientesCadastrados].emailCliente);
+				printf("***********Cadastro concluído com sucesso***********\n\n");
+				system("pause");
 				ClientesCadastrados++ ;
 			}
 			else
@@ -169,167 +184,139 @@ void MenuCadastroCliente() {
 				
 			}
 
-			if (!confirmacao("\nDeseja efetuar cadastro de um novo cliente?", 'Y', comMensagemDeErro))
+			if (!confirmacao("\nDeseja efetuar cadastro de um novo cliente? (Y/N)", 'Y', comMensagemDeErro))
 			{
 				continua = 0;
 			}
 	}
 	
 }
+void consultaSaldo(){
+	if (ClientesCadastrados > 0)
+	{
+		int   id = -1;
+		int * pont = &id;
+		char busca[100];
+		printf("\nInsira o CPF/CNPJ ou Email do Cliente: \n");
+		fflush(stdin);
+		fgets(busca, 100, stdin);
+
+		if (!existeCpfCnpj(busca, pont) || !existeMail(busca, pont))
+		{
+			system("cls");
+			id = *pont;
+			printf("\n\nId: %d\n", Cli[id].TotalGasto);
+			printf("Nome: %s", Cli[id].NomeCliente);
+			printf("CPF/CNPJ: %s", Cli[id].CPFCliente);
+			printf("Saldo: R$%.2f\n\n\n", Cli[id].TotalGasto);
+
+			system("pause");
+		}
+		else
+		{
+			error("Nenhum cliente encontrado");
+		}
+	}
+	else
+	{
+		error("Nenhum cliente cadastrado");
+		if (confirmacao("Deseje ir para Menu de Cadastro do Clientes? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			MenuCadastroCliente();
+		}
+	}
+
+}
+
+void exibirClientes(){
+	
+	if (ClientesCadastrados > 0)
+	{
+		int i , id = ClientesCadastrados;
+
+		system("cls");
+		printf("Listagem geral das informações cadastradas de Clientes:\n\n");
+		for (i = 0; i < id; i++)
+		{
+			printf("Nome: %s", Cli[i].NomeCliente);
+			printf("Id: %d\n", Cli[i].IDCliente);
+			printf("CPF/CNPJ: %s", Cli[i].CPFCliente);
+			printf("Email: %s", Cli[i].emailCliente);
+			printf("Telefone: %s\n", Cli[i].TelefoneCliente);
+			printf("Informações sobre Vendas do(a): %s \n", Cli[i].NomeCliente);
+			printf("Valor saldo gasto: R$%.2f\n", Cli[i].TotalGasto);
+			printf("Numero de vendas: %d\n", Cli[i].TotalVendas);
+
+			printf("\n\n");
+
+		}
+		system("pause");
+	}
+	else
+	{
+		error("Nenhum cliente cadastrado");
+		if (confirmacao("Deseje ir para Menu de Cadastro do Clientes? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			MenuCadastroCliente();
+		}
+	}
+
+
+}
 
 int setupCliente()
 {
-	system("cls");
-	printf("###############################################################################\n");
-	printf("#                                                                             #\n");
-	printf("################      Setup de desconto dos Clientes      #####################\n");
-	printf("#                                                                             #\n");
-	printf("#   É possivel por regra alterar valor default da régua de desconto para      #\n");
-	printf("#    todos os clientes fidelidade cadastrados e também o percentual de        #\n");
-	printf("#   descontos que os clientes terão para compras apartir desse saldo.         #\n");
-	printf("#                                                                             #\n");
-	printf("#     ---------------------  Painel de desconto  ------------------           #\n");
-	printf("#     /  Acima de R$%.f\tgastos\t          %.1f%% desc.\t  /           #\n", descUm, percUm);
-	printf("#     /  Acima de R$%.f\tgastos\t          %.1f%% desc.\t  /           #\n", descDois,percDois);
-	printf("#     /  Acima de R$%.f\tgastos\t          %.1f%% desc.\t  /           #\n",descTres,percTres);
-	printf("#     /  Acima de R$%.f\tgastos\t          %.1f%% desc.\t  /           #\n",descQuat,percQuat);
-	printf("#     -------------------------------------------------------------           #\n");
-	printf("###############################################################################\n");
-
-	if (confirmacao("Deseja alterar valores padronizados? (Y/N)", 'Y', comMensagemDeErro))
+	while (true)
 	{
 		system("cls");
-		printf("Informe o valor a ser alterado:\n\n");
-		printf("0- Cancelar\n\n");
-		char auxDes[100];
-		float auxDesconto, auxPercentual;
-		printf("1- Acima de R$%2.f   gastos                %.1f%% desc.\n", descUm, percUm);
-		printf("2- Acima de R$%2.f   gastos                %.1f%% desc.\n", descDois, percDois);
-		printf("3- Acima de R$%2.f  gastos                %.1f%% desc.\n", descTres, percTres);
-		printf("4- Acima de R$%2.f gastos                %.1f%% desc.\n", descQuat, percQuat);
-		leituraSwitch(auxDes);
+		printf("###############################################################################\n");
+		printf("#                                                                             #\n");
+		printf("################      Setup de desconto dos Clientes      #####################\n");
+		printf("#                                                                             #\n");
+		printf("#   É possivel por regra alterar valor default da régua de desconto para      #\n");
+		printf("#    todos os clientes fidelidade cadastrados e também o percentual de        #\n");
+		printf("#   descontos que os clientes terão para compras apartir desse saldo.         #\n");
+		printf("#                                                                             #\n");
+		printf("#     ---------------------  Painel de desconto  ------------------           #\n");
+		printf("#     /  Acima de R$%2.f\tgastos         %.1f%%\tdesc.\t  /           #\n", descUm, percUm);
+		printf("#     /  Acima de R$%2.f\tgastos         %.1f%%\tdesc.\t  /           #\n", descDois, percDois);
+		printf("#     /  Acima de R$%2.f\tgastos         %.1f%%\tdesc.\t  /           #\n", descTres, percTres);
+		printf("#     /  Acima de R$%2.f\tgastos         %.1f%%\tdesc.\t  /           #\n", descQuat, percQuat);
+		printf("#     -------------------------------------------------------------           #\n");
+		printf("###############################################################################\n");
+
+		if (confirmacao("Deseja alterar valores padronizados? (Y/N)", 'Y', comMensagemDeErro))
+		{
+			system("cls");
+			printf("Informe o valor a ser alterado:\n\n");
+			printf("0- Cancelar\n\n");
+			char auxDes[100];
+			printf("1- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descUm, percUm);
+			printf("2- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descDois, percDois);
+			printf("3- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descTres, percTres);
+			printf("4- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descQuat, percQuat);
+			leituraSwitch(auxDes);
 
 			switch (auxDes[0])
-		{
+			{
 			case '1':
 			{
-				printf("Insira novo valor da régua: ");
-				scanf_s("%f", &auxDesconto);
-				if (auxDesconto < 0)
-				{
-					error("Valor da régua não pode ser negativo");
-					break;
-				}
-				printf("Insira novo valor do percentual: ");
-				scanf_s("%f", &auxPercentual);
-				if (auxPercentual < 0)
-				{
-					error("Valor do percentual não pode ser negativo");
-					break;
-				}
-				printf("\nConfirma alteração da régua de: R$%.1f para: R$%.1f\n",descUm, auxDesconto);
-				printf("Confirma alteração do percentual de: %.2f%% para: %.2f%% ? (Y/N)\n", percUm, auxPercentual);
-				if (confirmacao("", 'Y', semMensagemDeErro))
-				{
-					descUm = auxDesconto;
-					percUm = auxPercentual;
-					error("Valores alterados");
-				}
-				else
-				{
-					error("Valores não alterados");
-				}
+				alteraDescontosCli('1');
 				break;
 			}
 			case '2':
 			{
-
-				printf("Insira novo valor da régua: ");
-				scanf_s("%f", &auxDesconto);
-				if (auxDesconto < 0)
-				{
-					error("Valor da régua não pode ser negativo");
-					break;
-				}
-				printf("Insira novo valor do percentual: ");
-				scanf_s("%f", &auxPercentual);
-				if (auxPercentual < 0)
-				{
-					error("Valor do percentual não pode ser negativo");
-					break;
-				}
-				printf("\nConfirma alteração da régua de: R$%.1f para: R$%.1f\n", descDois, auxDesconto);
-				printf("Confirma alteração do percentual de: %.2f%% para: %.2f%% ? (Y/N)\n", percDois, auxPercentual);
-				if (confirmacao("", 'Y', semMensagemDeErro))
-				{
-					descDois = auxDesconto;
-					percDois = auxPercentual;
-					error("Valores alterados");
-				}
-				else
-				{
-					error("Valores não alterados");
-				}
+				alteraDescontosCli('2');
 				break;
 			}
 			case '3':
 			{
-				printf("Insira novo valor da régua: ");
-				scanf_s("%f", &auxDesconto);
-				if (auxDesconto < 0)
-				{
-					error("Valor da régua não pode ser negativo");
-					break;
-				}
-				printf("Insira novo valor do percentual: ");
-				scanf_s("%f", &auxPercentual);
-				if (auxPercentual < 0)
-				{
-					error("Valor do percentual não pode ser negativo");
-					break;
-				}
-				printf("\nConfirma alteração da régua de: R$%.1f para: R$%.1f\n", descTres, auxDesconto);
-				printf("Confirma alteração do percentual de: %.2f%% para: %.2f%% ? (Y/N)\n", percTres, auxPercentual);
-				if (confirmacao("", 'Y', semMensagemDeErro))
-				{
-					descTres = auxDesconto;
-					percTres = auxPercentual;
-					error("Valores alterados");
-				}
-				else
-				{
-					error("Valores não alterados");
-				}
+				alteraDescontosCli('3');
 				break;
 			}
 			case '4':
 			{
-				printf("Insira novo valor da régua: ");
-				scanf_s("%f", &auxDesconto);
-				if (auxDesconto < 0)
-				{
-					error("Valor da régua não pode ser negativo");
-					break;
-				}
-				printf("Insira novo valor do percentual: ");
-				scanf_s("%f", &auxPercentual);
-				if (auxPercentual < 0)
-				{
-					error("Valor do percentual não pode ser negativo");
-					break;
-				}
-				printf("\nConfirma alteração da régua de: R$%.1f para: R$%.1f\n", descQuat, auxDesconto);
-				printf("Confirma alteração do percentual de: %.2f%% para: %.2f%% ? (Y/N)\n", percQuat, auxPercentual);
-				if (confirmacao("", 'Y', semMensagemDeErro))
-				{
-					descQuat = auxDesconto;
-					percQuat = auxPercentual;
-					error("Valores alterados");
-				}
-				else
-				{
-					error("Valores não alterados");
-				}
+				alteraDescontosCli('4');
 				break;
 			}
 			case '0':
@@ -337,12 +324,17 @@ int setupCliente()
 				break;
 			}
 			default:
+				fflush(stdin);
 				error("Valor inválido");
 				break;
+			}
+		}
+		else
+		{
+			return 0;
 		}
 	}
 	return 1;
-
 }
 
 bool existeCpfCnpj(char * cpf, int * id){
@@ -388,6 +380,65 @@ bool existeMail(char * email, int * id){
 	}
 
 	return true;
+}
+bool alteraDescontosCli(char numero){
+
+	float auxDesconto, auxPercentual;
+
+	printf("Insira novo valor da régua: ");
+	scanf_s("%f", &auxDesconto);
+	if (auxDesconto < 0)
+	{
+		error("Valor da régua não pode ser negativo");
+		return false;
+	}
+
+	printf("Insira novo valor do percentual: ");
+	scanf_s("%f", &auxPercentual);
+	if (auxPercentual < 0)
+	{
+		error("Valor do percentual não pode ser negativo");
+		return false;
+	}
+
+	printf("\nConfirma alteração da régua %c para: R$%.f\n", numero, auxDesconto);
+	printf("Confirma alteração do percentual %c para: %.1f%% ? (Y/N)\n", numero, auxPercentual);
+	if (confirmacao("", 'Y', semMensagemDeErro))
+	{
+		if (numero == '1')
+		{
+			descUm = auxDesconto;
+			percUm = auxPercentual;
+
+		}
+		else if (numero == '2')
+		{
+			descDois = auxDesconto;
+			percDois = auxPercentual;
+		}
+		else if (numero == '3')
+		{
+			descTres = auxDesconto;
+			percTres = auxPercentual;
+		}
+		else if (numero == '4')
+		{
+			descQuat = auxDesconto;
+			percQuat = auxPercentual;
+		}
+		else
+		{
+			error("Valor passado no parâmetro de alteração está incorreto, favor informar o responsável pelo sistema.");
+			return false;
+		}
+		error("Valores alterados com sucesso");
+		return true;
+	}
+	else
+	{ 
+		error("Valores não alterados");
+	}
+	return false;
 }
 
 #endif

@@ -225,10 +225,14 @@ bool validaCpfCnpj(char* cpf, bool mensagem)
 {
 	int i = 0;
 
-	if ( !(strlen(cpf) - 1 == 11) || !(strlen(cpf) - 1 == 14))
+	if ((strlen(cpf) - 1 == 11) || (strlen(cpf) - 1 == 14))
+	{
+	}
+	else
 	{
 		if (mensagem)
 		{
+			printf("Valor do campo : %d", strlen(cpf) );
 			error("O campo: CPF/CNPJ é obrigatório possuir 11 ou 14 caracteres");
 		}
 		return false;

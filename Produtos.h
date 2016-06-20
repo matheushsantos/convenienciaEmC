@@ -665,9 +665,7 @@ int pesquisaProduto(){
 		}
 		else
 		{
-			printf("***Id Nao Encontrado***");
-			getchar();
-			getchar();
+			error("Id Nao Encontrado");
 			return -1;
 		}
 		break;
@@ -698,7 +696,7 @@ int pesquisaProduto(){
 		}
 		if (aux == 0)
 		{
-			printf("***Id Nao Encontrado***");
+			error("Id Nao Encontrado");
 			getchar();
 			// getchar();
 			return -1;
@@ -712,10 +710,8 @@ int pesquisaProduto(){
 		break;
 	}
 	default:
-		printf("**Valor Invalido**");
-		getchar();
-		getchar();
-		getchar();
+		fflush(stdin);
+		error("Valor Invalido");
 		return -1;
 		break;
 	}
