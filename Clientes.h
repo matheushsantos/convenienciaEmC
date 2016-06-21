@@ -175,7 +175,7 @@ void MenuCadastroCliente() {
 				printf("CPF:\t%s", Cli[ClientesCadastrados].CPFCliente);
 				printf("E-mail:\t%s\n\n", Cli[ClientesCadastrados].emailCliente);
 				printf("***********Cadastro concluído com sucesso***********\n\n");
-				system("pause");
+				//system("pause");
 				ClientesCadastrados++ ;
 			}
 			else
@@ -184,7 +184,7 @@ void MenuCadastroCliente() {
 				
 			}
 
-			if (!confirmacao("\nDeseja efetuar cadastro de um novo cliente? (Y/N)", 'Y', comMensagemDeErro))
+			if (!confirmacao("\nDeseja efetuar cadastro de um novo cliente? (Y/N)", 'Y', comMensagemDeErro, NULL))
 			{
 				continua = 0;
 			}
@@ -205,7 +205,7 @@ void consultaSaldo(){
 		{
 			system("cls");
 			id = *pont;
-			printf("\n\nId: %d\n", Cli[id].TotalGasto);
+			printf("\n\nId: %d\n", Cli[id].IDCliente);
 			printf("Nome: %s", Cli[id].NomeCliente);
 			printf("CPF/CNPJ: %s", Cli[id].CPFCliente);
 			printf("Saldo: R$%.2f\n\n\n", Cli[id].TotalGasto);
@@ -220,7 +220,7 @@ void consultaSaldo(){
 	else
 	{
 		error("Nenhum cliente cadastrado");
-		if (confirmacao("Deseje ir para Menu de Cadastro do Clientes? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseje ir para Menu de Cadastro do Clientes? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
 			MenuCadastroCliente();
 		}
@@ -247,15 +247,16 @@ void exibirClientes(){
 			printf("Valor saldo gasto: R$%.2f\n", Cli[i].TotalGasto);
 			printf("Numero de vendas: %d\n", Cli[i].TotalVendas);
 
-			printf("\n\n");
+			printf("\n\n---X---X---X---X---X---X---X---X---\n");
 
 		}
+		printf("\n\n");
 		system("pause");
 	}
 	else
 	{
 		error("Nenhum cliente cadastrado");
-		if (confirmacao("Deseje ir para Menu de Cadastro do Clientes? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseje ir para Menu de Cadastro do Clientes? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
 			MenuCadastroCliente();
 		}
@@ -285,7 +286,7 @@ int setupCliente()
 		printf("#     -------------------------------------------------------------           #\n");
 		printf("###############################################################################\n");
 
-		if (confirmacao("Deseja alterar valores padronizados? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja alterar valores padronizados? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			system("cls");
 			printf("Informe o valor a ser alterado:\n\n");
@@ -403,7 +404,7 @@ bool alteraDescontosCli(char numero){
 
 	printf("\nConfirma alteração da régua %c para: R$%.f\n", numero, auxDesconto);
 	printf("Confirma alteração do percentual %c para: %.1f%% ? (Y/N)\n", numero, auxPercentual);
-	if (confirmacao("", 'Y', semMensagemDeErro))
+	if (confirmacao("", 'Y', semMensagemDeErro, true))
 	{
 		if (numero == '1')
 		{

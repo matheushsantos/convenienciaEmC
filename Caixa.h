@@ -25,6 +25,7 @@ void totalUsado();
 void verificarCaixa();
 void fechaCaixa();
 void FuncaoCaixa();
+int consultaSaldoCaixa();
 int abrirDia();
 bool getCaixa();
 
@@ -49,6 +50,7 @@ void FuncaoCaixa()
 		printf("#         1 - Para abrir o dia atual                                          #\n");
 		printf("#         2 - Para consulta o caixa                                           #\n");
 		printf("#         3 - Para fechar o caixa total                                       #\n");
+		printf("#         4 - Para saldo geral da loja                                        #\n");
 		printf("#         0 - Para retornar ao menu principal                                 #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
@@ -75,6 +77,13 @@ void FuncaoCaixa()
 			//printf("chegou aqui");
 			//system("pause");
 			fechaCaixa();
+			break;
+		}
+		case ('4') :
+		{
+			//printf("chegou aqui");
+			//system("pause");
+			consultaSaldoCaixa();
 			break;
 		}
 		case ('0') :
@@ -105,7 +114,7 @@ int abrirDia(){
 	//ssystem("pause");
 	/*Primeira passagem*/
 
-		if (confirmacao("\nConfirma Abertura de Caixa? (Y/N)\n\nQualquer tecla Para cancelamento. . .", 'Y', comMensagemDeErro))
+		if (confirmacao("\nConfirma Abertura de Caixa? (Y/N)\n\nQualquer tecla Para cancelamento. . .", 'Y', comMensagemDeErro, true))
 		{
 			if (diaAtual == -1) diaAtual++;
 
@@ -126,7 +135,7 @@ int abrirDia(){
 				}
 				else if (caixa[diaAtual].aberto)
 				{
-					if (confirmacao("Caixa atual encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro))
+					if (confirmacao("Caixa atual encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro,true))
 					{
 						fechaCaixa();
 					}
@@ -154,7 +163,7 @@ int abrirDia(){
 				}
 				else
 				{
-					if (confirmacao("Caixa anterior encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro))
+					if (confirmacao("Caixa anterior encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro, true))
 					{
 						fechaCaixa();
 					}
@@ -195,7 +204,7 @@ void verificarCaixa(){
 		else
 		{
 			printf("desabilitado");
-			if (confirmacao("\nDeseja ir para tela de Lucro? (Y/N)" , 'Y', comMensagemDeErro))
+			if (confirmacao("\nDeseja ir para tela de Lucro? (Y/N)" , 'Y', comMensagemDeErro,true))
 			{
 				if (menuAlterarTaxa())
 				{
@@ -204,7 +213,7 @@ void verificarCaixa(){
 			}
 		}
 		printf("\nTotal diário: R$%.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
-		if (confirmacao("Deseja ir para o Fechamento de Caixa? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja ir para o Fechamento de Caixa? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			fechaCaixa();
 		}
@@ -212,7 +221,7 @@ void verificarCaixa(){
 	}
 	else
 	{
-		if (confirmacao("Caixa encontra-se fechado, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Caixa encontra-se fechado, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			abrirDia();
 		}
@@ -250,7 +259,7 @@ void fechaCaixa(){
 		}
 		printf("\nTotal diário: %.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
 		
-		if (confirmacao("Confirma Fechamento Diário? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Confirma Fechamento Diário? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			caixa[diaAtual].aberto = false;
 			diaAtual++;
@@ -264,16 +273,52 @@ void fechaCaixa(){
 	}
 	else
 	{
-		if (confirmacao("Não existe um caixa aberto, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Não existe um caixa aberto, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			abrirDia();
 		}
 		else
 		{
-			error("Retornando ao Menu");
+		//	error("Retornando ao Menu");
 		}
 	}
 }
+
+int consultaSaldoCaixa(){
+
+	if (diaAtual >= 0)
+	{
+		int i = 0;
+		float total = 0, entrada = 0 , saida = 0 ;
+
+		for (i = 0 ; i <= diaAtual ; i++)
+		{
+			entrada += caixa[i].entradaDiaria;
+			saida += caixa[i].totalVendaDia;
+			total += caixa[i].entradaDiaria + caixa[i].totalVendaDia;
+		}
+
+		system("cls");
+		printf("\n");
+		printf("# Saldo de gastos com compras da conveniencia: R$%.2f\n", entrada);
+		printf("# Saldo de vendas da conveniencia: R$%.2f\n\n", saida);
+		printf("# Saldo geral da conveniencia: R$%.2f\n\n\n", total);
+		system("pause");
+
+	}
+	else
+	{
+		if (confirmacao("Não existe um caixa cadastrado, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro, true))
+		{
+			abrirDia();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+}
+
 
 bool getCaixa(){
 

@@ -266,7 +266,7 @@ int menuCadastrarProduto(){
 			float totalEntrada = 0;
 			totalEntrada = prod[idProduto].qntProduto * prod[idProduto].valor;
 			printf("\nConfirma baixa de R$%.2f no caixa? (Y/N)\n", totalEntrada);
-			if (confirmacao("", 'Y', semMensagemDeErro))
+			if (confirmacao("", 'Y', semMensagemDeErro, true))
 			{
 				caixa[diaAtual].entradaDiaria -= totalEntrada;
 			}
@@ -280,11 +280,11 @@ int menuCadastrarProduto(){
 			
 			prod[idProduto].id = idProduto+1 ;
 
-			printf("\nId do Produto: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
+			printf("\n\nId do Produto: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
 			idProduto++;
-			system("pause");
+			//system("pause");
 			
-			if (confirmacao("Deseja efetuar um novo cadastro/entrada de produto? (Y/N)", 'Y', comMensagemDeErro))
+			if (confirmacao("Deseja efetuar um novo cadastro/entrada de produto? (Y/N)", 'Y', comMensagemDeErro,true))
 			{
 				continua = true;
 			}
@@ -298,7 +298,7 @@ int menuCadastrarProduto(){
 	else
 	{
 		error("O caixa encontra-se fechado");
-		if (confirmacao("Deseja ir para tela de abertura do caixa? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja ir para tela de abertura do caixa? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			abrirDia();
 		}
@@ -336,7 +336,7 @@ int menuAlterarValorProduto(){
 			if (newValue > 0)
 			{
 				printf("\nConfirma alteracao de: R$%.2f para: R$%.2f ao Produto (Y/N)\n", prod[codProd].valor, newValue);
-				if (confirmacao("", 'Y', semMensagemDeErro))
+				if (confirmacao("", 'Y', semMensagemDeErro,true))
 				{
 					prod[codProd].valor = newValue;
 					printf("\nValor Atual: R$%.2f\n", prod[codProd].valor);
@@ -363,7 +363,7 @@ int menuAlterarValorProduto(){
 	else
 	{
 		printf("\n**Nenhum produto cadastrado**\n");
-		if (confirmacao("Deseja ir para o Cadastro de Produtos? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja ir para o Cadastro de Produtos? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			menuCadastrarProduto();
 		}
@@ -445,7 +445,7 @@ int listarCategoria(bool pause){
 	{
 		
 		printf("\n**Nenhum produto cadastrado**\n");
-		if (confirmacao("Deseja ir para o Cadastro de Produtos? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja ir para o Cadastro de Produtos? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			menuCadastrarProduto();
 		}
@@ -499,7 +499,7 @@ int listarGeral(){
 	else
 	{
 		error("Nenhum produto cadastro");
-		if(confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro))
+		if(confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
 			if (menuCadastrarProduto()) return 0;
 		}
@@ -538,7 +538,7 @@ int entradaProd(){
 				totalEntrada = qnt * prod[codProd].valor;
 				printf("\nConfirma entrada de: %d unid. ao Produto?", qnt);
 				printf("\nConfirma baixa de R$%.2f no caixa? (Y/N)\n", totalEntrada);
-				if (confirmacao("",'Y', semMensagemDeErro))
+				if (confirmacao("",'Y', semMensagemDeErro, true))
 				{
 					
 					caixa[diaAtual].entradaDiaria -= totalEntrada;
@@ -565,7 +565,7 @@ int entradaProd(){
 	else
 	{
 		error("Nenhum produto cadastro");
-		if (confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
 			menuCadastrarProduto();
 		}
@@ -602,7 +602,7 @@ int saidaProd(){
 			if (qnt > 0 && ( (prod[codProd].qntProduto - qnt) >= 0 ) )
 			{	
 				printf("\nConfirma saida de: %d ao Produto (Y/N)\n", qnt);
-				if (confirmacao("", 'Y', semMensagemDeErro))
+				if (confirmacao("", 'Y', semMensagemDeErro,true))
 				{
 					prod[codProd].qntProduto -= qnt;
 					printf("\nValor Atual: %d\n", prod[codProd].qntProduto);
@@ -629,7 +629,7 @@ int saidaProd(){
 		error("Nenhum produto cadastro");
 		printf("\n");
 		
-		if (confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Deseja Cadastrar Produtos? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			menuCadastrarProduto();
 		}

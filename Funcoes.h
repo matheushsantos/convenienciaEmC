@@ -45,9 +45,10 @@ bool leituraSwitch(char * string)
 	return true;
 }
 
-bool confirmacao(char * msg, char letra, bool mensagem)
+bool confirmacao(char * msg, char letra, bool mensagem, bool scan)
 {
-	getchar();
+	if (scan) getchar();
+	
 	char aux[100] ;
 	if (mensagem)
 	{
@@ -295,14 +296,14 @@ bool  menuAlterarTaxa()
 	if (lucroProd == 0)
 	{
 
-		if (confirmacao("Taxa não cadastrada, deseja cadastrar uma taxa de lucro? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Taxa não cadastrada, deseja cadastrar uma taxa de lucro? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
 			printf("Insira o percentual da taxa: (Ex. 20,2 = 20,2%%): ");
 			scanf_s("%f", &auxTaxa);
 			if (auxTaxa > 0)
 			{
 				printf("Confirma inclusao de: %.2f%% de taxa (Y/N)\n", auxTaxa);
-				if (confirmacao("", 'Y', semMensagemDeErro))
+				if (confirmacao("", 'Y', semMensagemDeErro, true))
 				{
 					lucroProd = auxTaxa / 100;
 					return true;
@@ -327,14 +328,14 @@ bool  menuAlterarTaxa()
 	else
 	{
 		printf("\nValor da Taxa atual: %.2f%%\nDeseja alterar valor atual? (Y/N)\n", lucroProd * 100);
-		if (confirmacao("", 'Y', semMensagemDeErro))
+		if (confirmacao("", 'Y', semMensagemDeErro, true))
 		{
 			printf("Insira novo valor de taxa: (Ex. 2,2 = 2,2%%): ");
 			scanf_s("%f", &auxTaxa);
 			if (auxTaxa > 0)
 			{
 				printf("Confirma alteracao de: %.2f%% para: %.2f%% da taxa? (Y/N)\n", lucroProd * 100, auxTaxa);
-				if (confirmacao("",'Y', semMensagemDeErro))
+				if (confirmacao("",'Y', semMensagemDeErro, true))
 				{
 					lucroProd = auxTaxa/100;				
 					return true;

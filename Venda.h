@@ -91,9 +91,10 @@ int vendaFidelidade(){
 		char busca[100];
 		printf("\n*Insira o CPF/CNPJ ou Email do Cliente: \n");
 		fflush(stdin);
-		//fgets(busca, 100, stdin);
-		scanf("%s", &busca);
-		strcat(busca, "\n");
+		fgets(busca, 100, stdin);
+		if (busca[0] == '0' && strlen(busca) <= 2 ) return 0;
+		//scanf("%s", &busca);
+		//strcat(busca, "\n");
 		//Buscando o id do cliente atraves do parametro 'out'= pont da função
 		if (!existeCpfCnpj(busca, pont) || !existeMail(busca, pont))
 		{
@@ -105,7 +106,7 @@ int vendaFidelidade(){
 
 			//printf("pressione Enter . . . .\n");
 
-			if (confirmacao("Confirma os Dados do Cliente? (Y/N)", 'Y', comMensagemDeErro))
+			if (confirmacao("Confirma os Dados do Cliente? (Y/N)", 'Y', comMensagemDeErro, NULL))
 			{
 				while (true)
 				{
@@ -116,7 +117,7 @@ int vendaFidelidade(){
 							Cli[id].TotalVendas++;
 							Cli[id].TotalGasto += x;
 							printf("\Deseja efetuar nova venda para o Cliente Id: %d ? (Y/N)\n", Cli[id].IDCliente);
-							if (!confirmacao("", 'Y', semMensagemDeErro))
+							if (!confirmacao("", 'Y', semMensagemDeErro, true))
 							{
 								break;
 							}
@@ -135,7 +136,7 @@ int vendaFidelidade(){
 		}
 		else
 		{
-			if(confirmacao("Cliente não cadastrado, deseja Cadastrar Cliente? (Y/N)",'Y', comMensagemDeErro))
+			if(confirmacao("Cliente não cadastrado, deseja Cadastrar Cliente? (Y/N)",'Y', comMensagemDeErro, NULL))
 			{
 				MenuCadastroCliente();
 			}
@@ -148,7 +149,7 @@ int vendaFidelidade(){
 	else
 	{
 	//	ClientesCadastrados = 0;
-		if (confirmacao("Nenhum Cliente cadastrado, deseja Cadastrar Cliente? (Y/N)", 'Y', comMensagemDeErro))
+		if (confirmacao("Nenhum Cliente cadastrado, deseja Cadastrar Cliente? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
 			MenuCadastroCliente();
 		}
@@ -271,7 +272,7 @@ float vendaProdutos(int tipoVenda, int idCli){
 								trocoVenda = (valorRecebido - valorVenda);
 								printf("\nTroco: R$%.2f", trocoVenda);
 
-								if (confirmacao("Deseja confirma venda? (Y/N)", 'Y', comMensagemDeErro))
+								if (confirmacao("Deseja confirma venda? (Y/N)", 'Y', comMensagemDeErro, true))
 								{
 
 										prod[id].qntProduto -= numVenda;
@@ -287,7 +288,7 @@ float vendaProdutos(int tipoVenda, int idCli){
 									else if (tipoVenda == idVendaAvulsa)
 									{
 										error("Venda Confirmada");
-										if (confirmacao("Deseja efetuar nova Venda Avulsa? (Y/N)", 'Y', comMensagemDeErro))
+										if (confirmacao("Deseja efetuar nova Venda Avulsa? (Y/N)", 'Y', comMensagemDeErro, true))
 										{
 											system("cls");
 											continue;
@@ -318,21 +319,21 @@ float vendaProdutos(int tipoVenda, int idCli){
 			}
 			else
 			{
-				printf("**Abrir Caixa para Disponbilizar Venda**");
+				printf("\n**Abrir Caixa para Disponbilizar Venda**\n");
 				system("pause");
 				abrirDia();
 			}
 		}
 		else
 		{
-			printf("**Abrir Caixa para Disponbilizar Venda**");
+			printf("\n**Abrir Caixa para Disponbilizar Venda**\n");
 			system("pause");
 			abrirDia();
 		}
 	}
 	else
 	{
-		if(confirmacao("Nenhum produto cadastrado, deseja Cadastrar Produtos? (Y/N)",'Y',comMensagemDeErro))
+		if(confirmacao("Nenhum produto cadastrado, deseja Cadastrar Produtos? (Y/N)",'Y',comMensagemDeErro, true))
 		{
 			menuCadastrarProduto();
 		}
