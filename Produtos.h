@@ -38,6 +38,7 @@ int listarCategoria( bool pause);
 int listarGeral();
 int entradaProd();
 int saidaProd();
+bool salvaProdArq();
 struct Produtos * prod;
 
 /*Variaveis de controle*/
@@ -62,6 +63,12 @@ void funcaoProduto()
 		printf("#         0 - Para retornar ao menu principal                                 #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
+		FILE * arq;
+		arq = fopen("produtos.bin", "rb");
+		fseek(arq, 0, SEEK_END);
+		long tamanho = ftell(arq);
+		fcloseall;
+	//	printf("Numero ID PROD: %d Tamanho: %d", idProduto, tamanho/(sizeof(struct Produtos)));
 		leituraSwitch(opcaoMenuProduto);
 
 		switch (opcaoMenuProduto[0])
@@ -91,6 +98,7 @@ void funcaoProduto()
 
 			if (menuAlterarTaxa())
 			{
+				escreveVarGlobaisFloat("txLucro.txt", lucroProd);
 				error("Taxa cadastrada com sucesso");
 			}
 			else
@@ -192,14 +200,15 @@ int menuCadastrarProduto(){
 			printf("###############################################################################\n");
 
 			//############################## ALOCANDO MEMÓRIA##############################################
-			if (idProduto == 0)
+			if (idProduto == 0 && !sessaoArquivo)
 			{
 				prod = (struct Produtos *)malloc(sizeof(struct Produtos));
-
+				//printf("\nMalloquei em PRD\n");
 			}
 			else if (idProduto >= 1)
 			{
 				prod = (struct Produtos *)realloc(prod, (idProduto + 1)*sizeof(struct Produtos));
+				//printf("\Realloquei em PRD\n");
 			}
 			//############################################################################################
 
@@ -211,6 +220,11 @@ int menuCadastrarProduto(){
 			printf("Nome do Prod.: ");
 			fflush(stdin);
 			fgets(prod[idProduto].nomeProduto, 100, stdin);
+
+			char *pos;
+			if ((pos = strchr(prod[idProduto].nomeProduto, '\n')) != NULL)
+				*pos = '\0';
+
 			if (prod[idProduto].nomeProduto[0] == '0') return 0;
 			if (!validarNomePrd(prod[idProduto].nomeProduto, comMensagemDeErro)) return 0;
 
@@ -221,13 +235,20 @@ int menuCadastrarProduto(){
 			printf("\nNome do Fornecedor/Marca: ");
 			fflush(stdin);
 			fgets(prod[idProduto].fornecedor, 100, stdin);
+
+
+
+			if ((pos = strchr(prod[idProduto].fornecedor, '\n')) != NULL)
+				*pos = '\0';
+
+
 			if (prod[idProduto].fornecedor[0] == '0') return 0;
 			if (!validarNomePrd(prod[idProduto].fornecedor, comMensagemDeErro)) return 0;
 			convertToUpper(prod[idProduto].fornecedor);
 
 			/*Valor do Produto recebido*/
 			printf("\nValor de Tabela: R$");
-			scanf_s("%f", &prod[idProduto].valor);
+			scanf("%f", &prod[idProduto].valor);
 			if (prod[idProduto].valor == 0) return 0;
 			if (prod[idProduto].valor < 0)
 			{
@@ -237,7 +258,7 @@ int menuCadastrarProduto(){
 
 			/*Quantidade de Produtos*/
 			printf("\nQndt Produtos: ");
-			scanf_s("%d", &prod[idProduto].qntProduto);
+			scanf("%d", &prod[idProduto].qntProduto);
 			if (prod[idProduto].qntProduto == 0)  return 0;
 			if (prod[idProduto].qntProduto < 0)
 			{
@@ -262,13 +283,17 @@ int menuCadastrarProduto(){
 
 
 			/*Calculo para descontar produtos do caixa*/
-
 			float totalEntrada = 0;
 			totalEntrada = prod[idProduto].qntProduto * prod[idProduto].valor;
 			printf("\nConfirma baixa de R$%.2f no caixa? (Y/N)\n", totalEntrada);
 			if (confirmacao("", 'Y', semMensagemDeErro, true))
 			{
 				caixa[diaAtual].entradaDiaria -= totalEntrada;
+				if (!salvaCaixaArq())
+				{
+					error("Cadastro cancelado, erro ao baixar valor no caixa");
+					return 0;
+				}
 			}
 			else
 			{
@@ -282,8 +307,11 @@ int menuCadastrarProduto(){
 
 			printf("\n\nId do Produto: %d\n***Cadastro Concluido***\n\n", prod[idProduto].id);
 			idProduto++;
-			//system("pause");
-			
+			if (salvaProdArq())
+			{
+				escreveVarGlobais("idProduto.txt", idProduto);
+				system("pause");
+			}
 			if (confirmacao("Deseja efetuar um novo cadastro/entrada de produto? (Y/N)", 'Y', comMensagemDeErro,true))
 			{
 				continua = true;
@@ -328,7 +356,7 @@ int menuAlterarValorProduto(){
 		if (codProd > 0 && codProd <= idProduto)
 		{
 			codProd--;
-			printf("Nome do Produto: %s", prod[codProd].nomeProduto);
+			printf("Nome do Produto: %s\n", prod[codProd].nomeProduto);
 			printf("Valor Cadastrado: R$%.2f\n", prod[codProd].valor);
 
 			printf("Insira novo preco: R$");
@@ -340,7 +368,11 @@ int menuAlterarValorProduto(){
 				{
 					prod[codProd].valor = newValue;
 					printf("\nValor Atual: R$%.2f\n", prod[codProd].valor);
-					error("Alteração confirmada");
+
+					if (salvaProdArq())
+					{
+						error("Alteração confirmada");
+					}
 				}
 				else
 				{
@@ -369,7 +401,7 @@ int menuAlterarValorProduto(){
 		}
 		else
 		{
-			error("Encaminhamento para tela de produtos não confirmado");
+			//error("Encaminhamento para tela de produtos não confirmado");
 			return 0;
 		}
 	}
@@ -395,14 +427,15 @@ int listarCategoria(bool pause){
 			bool auxEncontrou = false;
 
 			system("cls");
+
 			for (i = 0; i < idProduto; i++)
 			{
 				if (prod[i].categoria == cat)
 				{
 					auxEncontrou = true;
-					printf("Nome do Produto: %s", prod[i].nomeProduto);
+					printf("Nome do Produto: %s\n", prod[i].nomeProduto);
 					printf("Id do Produto: %d\n", prod[i].id);
-					printf("Fornecedor: %s", prod[i].fornecedor);
+					printf("Fornecedor: %s\n", prod[i].fornecedor);
 					printf("Qntd Disponivel: %d\n", prod[i].qntProduto);
 
 					if (prod[i].categoria == combustivel)
@@ -466,13 +499,13 @@ int listarGeral(){
 	if (idProduto >= 1)
 	{
 
-
+		
 		for (i = 0; i < idProduto; i++)
 		{
 
-			printf("Nome do Produto: %s", prod[i].nomeProduto);
+			printf("Nome do Produto: %s\n", prod[i].nomeProduto);
 			printf("Id do Produto: %d\n", prod[i].id);
-			printf("Fornecedor: %s", prod[i].fornecedor);
+			printf("Fornecedor: %s\n", prod[i].fornecedor);
 			printf("Qntd Disponivel: %d\n", prod[i].qntProduto);
 
 			if (prod[i].categoria == combustivel)
@@ -491,7 +524,6 @@ int listarGeral(){
 			{
 				printf("Categoria: Diversos\n\n");
 			}
-
 
 		}
 		system("pause");
@@ -512,7 +544,8 @@ int listarGeral(){
 }
 
 int entradaProd(){
-	int codProd, qnt;
+	int codProd; 
+	int qnt;
 	if (idProduto >= 1)
 	{
 		printf("#################### ENTRADA DE PRODUTOS ####################\n");
@@ -527,7 +560,7 @@ int entradaProd(){
 		if (codProd > 0 && codProd <= idProduto)
 		{
 			codProd--;
-			printf("Nome do Produto: %s", prod[codProd].nomeProduto);
+			printf("Nome do Produto: %s\n", prod[codProd].nomeProduto);
 			printf("Qntd Disponivel: %d\n", prod[codProd].qntProduto);
 
 			printf("Insira qntd Entrada: ");
@@ -544,8 +577,10 @@ int entradaProd(){
 					caixa[diaAtual].entradaDiaria -= totalEntrada;
 					prod[codProd].qntProduto += qnt;
 
-					printf("\nValor Atual de Unid.: %d\n", prod[codProd].qntProduto);
-					error("Entrada Confirmada");
+					if (salvaProdArq())
+					{
+						error("Entrada Confirmada");
+					}
 				}
 				else
 				{
@@ -594,7 +629,7 @@ int saidaProd(){
 		if (codProd > 0 && codProd <= idProduto)
 		{
 			codProd--;
-			printf("Nome do Produto: %s", prod[codProd].nomeProduto);
+			printf("Nome do Produto: %s\n", prod[codProd].nomeProduto);
 			printf("Qntd Disponivel: %d\n", prod[codProd].qntProduto);
 
 			printf("Insira qntd Saida: ");
@@ -606,7 +641,10 @@ int saidaProd(){
 				{
 					prod[codProd].qntProduto -= qnt;
 					printf("\nValor Atual: %d\n", prod[codProd].qntProduto);
-					error("Baixa Confirmada");
+					if (salvaProdArq())
+					{
+						error("Baixa Confirmada");
+					}
 				}
 				else
 				{
@@ -656,7 +694,7 @@ int pesquisaProduto(){
 		if ((idPesquisa > 0 && idProduto > 0) && (idPesquisa <= idProduto))
 		{
 			idPesquisa -- ;
-			printf("\nNome: %s", prod[idPesquisa].nomeProduto);
+			printf("\nNome: %s\n", prod[idPesquisa].nomeProduto);
 			printf("Id Produto: %d\n", prod[idPesquisa].id);
 			printf("Valor: R$%.2f", prod[idPesquisa].valor);
 			getchar();
@@ -679,13 +717,17 @@ int pesquisaProduto(){
 		fflush(stdin);
 		fgets(nomePesquisa, 100, stdin);
 	
+		char *pos;
+		if ((pos = strchr(nomePesquisa, '\n')) != NULL)
+			*pos = '\0';
+
 		convertToUpper(nomePesquisa);
 
 		for (i = 0; i < idProduto; i++)
 		{
 			if (strcmp(prod[i].nomeProduto, nomePesquisa) == 0)
 			{
-				printf("\nNome: %s", prod[i].nomeProduto);
+				printf("\nNome: %s\n", prod[i].nomeProduto);
 				printf("Id Produto: %d\n", prod[i].id);
 				printf("Valor: R$%.2f", prod[i].valor);
 				//getchar();
@@ -718,4 +760,29 @@ int pesquisaProduto(){
 	return 0;
 }
 
+bool salvaProdArq(){
+
+	FILE * arq;
+	arq = fopen("produtos.bin", "wb");
+	if (arq != NULL)
+	{
+		fwrite(&prod[0], sizeof(struct Produtos), idProduto, arq);
+		fclose(arq);
+		return true;
+	}
+	else
+	{
+		error("Erro ao salvar dados do Produto");
+		return false;
+	}
+}
+/*
+void removeQuebra(char * remove){
+
+	char *pos;
+	if ((pos = strchr(remove, '\n')) != NULL)
+		*pos = '\0';
+
+}
+*/
 #endif

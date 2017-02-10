@@ -93,6 +93,10 @@ int vendaFidelidade(){
 		fflush(stdin);
 		fgets(busca, 100, stdin);
 		if (busca[0] == '0' && strlen(busca) <= 2 ) return 0;
+
+		char *pos;
+		if ((pos = strchr(busca, '\n')) != NULL)
+			*pos = '\0';
 		//scanf("%s", &busca);
 		//strcat(busca, "\n");
 		//Buscando o id do cliente atraves do parametro 'out'= pont da função
@@ -100,9 +104,9 @@ int vendaFidelidade(){
 		{
 			id = *pont;
 
-			printf("\nNome: %s", Cli[id].NomeCliente);
-			printf("CPF/CNPJ: %s", Cli[id].CPFCliente);
-			printf("Email: %s", Cli[id].emailCliente);
+			printf("\nNome: %s\n", Cli[id].NomeCliente);
+			printf("CPF/CNPJ: %s\n", Cli[id].CPFCliente);
+			printf("Email: %s\n", Cli[id].emailCliente);
 
 			//printf("pressione Enter . . . .\n");
 
@@ -116,6 +120,7 @@ int vendaFidelidade(){
 						{
 							Cli[id].TotalVendas++;
 							Cli[id].TotalGasto += x;
+							salvaClienteArq();
 							printf("\Deseja efetuar nova venda para o Cliente Id: %d ? (Y/N)\n", Cli[id].IDCliente);
 							if (!confirmacao("", 'Y', semMensagemDeErro, true))
 							{
@@ -267,6 +272,7 @@ float vendaProdutos(int tipoVenda, int idCli){
 							scanf_s("%f", &valorRecebido);
 
 							/*Troco Cliente*/
+							//printf("Valor venda: %f\nValor Recebido: %f\n", valorVenda, valorRecebido);
 							if (valorRecebido >= valorVenda)
 							{
 								trocoVenda = (valorRecebido - valorVenda);
@@ -279,6 +285,8 @@ float vendaProdutos(int tipoVenda, int idCli){
 										caixa[diaAtual].totalVendaDia += valorVenda;
 										caixa[diaAtual].numVendaDia++;
 
+										salvaProdArq();
+										salvaCaixaArq();
 									/*Venda para cliente fidelidade*/
 									if (tipoVenda == idVendaFidelidade)
 									{
@@ -303,7 +311,7 @@ float vendaProdutos(int tipoVenda, int idCli){
 							else
 							{
 								system("cls");
-								error("Venda cancelada, insuficiente para completar a venda");
+								error("Venda cancelada, valores insuficientes para completar a venda");
 								return 0;
 							}
 						}

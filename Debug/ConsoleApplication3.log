@@ -1,11 +1,100 @@
-﻿Build started 21/06/2016 19:45:37.
+﻿Build started 07/07/2016 21:53:23.
      1>Project "C:\Users\Matheus\documents\visual studio 2013\Projects\ConsoleApplication3\ConsoleApplication3\ConsoleApplication3.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(388,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (ConsoleApplication3.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
+         Source.cpp
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(27): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(204) : see declaration of 'strtok'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(39): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(283) : see declaration of 'scanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(58): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(283) : see declaration of 'scanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(100): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(137): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(160): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(167): warning C4018: '>=' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(189): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(242): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(277): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(295): warning C4101: 'yn' : unreferenced local variable
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(367): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(383): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(388): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(401): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(406): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(419): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(437): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(475): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(476): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(477): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(478): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(479): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(480): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\caixa.h(42): warning C4101: 'opcaoCaixa' : unreferenced local variable
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\caixa.h(374): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(67): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(70): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(251): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(283) : see declaration of 'scanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(261): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(283) : see declaration of 'scanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(272): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(283) : see declaration of 'scanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(423): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(283) : see declaration of 'scanf'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(766): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\clientes.h(498): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\venda.h(124): warning C4129: 'D' : unrecognized character escape sequence
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\venda.h(284): warning C4244: '-=' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\venda.h(180): warning C4101: 'yn' : unreferenced local variable
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(83): warning C4996: '_sleep': This function or variable has been superceded by newer library or operating system functionality. Consider using Sleep instead. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(911) : see declaration of '_sleep'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(87): warning C4996: '_sleep': This function or variable has been superceded by newer library or operating system functionality. Consider using Sleep instead. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(911) : see declaration of '_sleep'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(91): warning C4996: '_sleep': This function or variable has been superceded by newer library or operating system functionality. Consider using Sleep instead. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(911) : see declaration of '_sleep'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(159): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(172): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(177): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(178): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(182): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(194): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(198): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(202): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(203): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(207): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(220): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\source.cpp(224): warning C4551: function call missing argument list
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\funcoes.h(361): warning C4715: 'menuAlterarTaxa' : not all control paths return a value
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\caixa.h(360): warning C4715: 'consultaSaldoCaixa' : not all control paths return a value
+     1>c:\users\matheus\documents\visual studio 2013\projects\consoleapplication3\consoleapplication3\produtos.h(338): warning C4715: 'menuCadastrarProduto' : not all control paths return a value
+       Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matheus\documents\visual studio 2013\Projects\ConsoleApplication3\Debug\ConvenienciaPosto.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matheus\documents\visual studio 2013\Projects\ConsoleApplication3\Debug\ConvenienciaPosto.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matheus\documents\visual studio 2013\Projects\ConsoleApplication3\Debug\ConvenienciaPosto.lib" /MACHINE:X86 Debug\Source.obj
          ConsoleApplication3.vcxproj -> C:\Users\Matheus\documents\visual studio 2013\Projects\ConsoleApplication3\Debug\ConvenienciaPosto.exe
      1>Done Building Project "C:\Users\Matheus\documents\visual studio 2013\Projects\ConsoleApplication3\ConsoleApplication3\ConsoleApplication3.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.31
+Time Elapsed 00:00:00.47

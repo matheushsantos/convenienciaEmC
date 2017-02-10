@@ -28,10 +28,11 @@ void FuncaoCaixa();
 int consultaSaldoCaixa();
 int abrirDia();
 bool getCaixa();
+bool salvaCaixaArq();
 
-
-int vendasFeitas, caixaAbertoTemp;
-float valorTotalVendas, totalVendido;
+int caixaAbertoTemp;
+//int vendasFeitas, caixaAbertoTemp;
+//float valorTotalVendas, totalVendido;
 struct Caixa * caixa;
 
 int diaAtual = -1;
@@ -54,6 +55,8 @@ void FuncaoCaixa()
 		printf("#         0 - Para retornar ao menu principal                                 #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
+		//printf("Variavel diaria: %d\n", diaAtual);
+		//printf("Dia Atual: %d", caixa[diaAtual].aberto);
 		leituraSwitch(teste);
 
 		switch (teste[0])
@@ -116,7 +119,20 @@ int abrirDia(){
 
 		if (confirmacao("\nConfirma Abertura de Caixa? (Y/N)\n\nQualquer tecla Para cancelamento. . .", 'Y', comMensagemDeErro, true))
 		{
-			if (diaAtual == -1) diaAtual++;
+			if (diaAtual == 0)
+			{
+				if (caixa[diaAtual].aberto)
+				{
+					if (confirmacao("Caixa atual encontra-se aberto, deseja fechar? (Y/N)", 'Y', comMensagemDeErro, true))
+					{
+						fechaCaixa();
+					}
+					else
+						return 0;
+				}
+			}
+			else
+			if (diaAtual == -1){ diaAtual++;}
 
 			if (diaAtual == 0)
 			{	
@@ -129,6 +145,8 @@ int abrirDia(){
 					caixa[diaAtual].totalVendaDia = 0;
 					caixa[diaAtual].entradaDiaria = 0;
 					printf("\n***Caixa Aberto 0***\n      Id: %d\n", caixa[diaAtual].diaAtual);
+					salvaCaixaArq();
+					escreveVarGlobais("idCaixa.txt", diaAtual);
 					system("pause");
 					if (caixaAbertoTemp == 0) caixaAbertoTemp++;
 					return 1;
@@ -151,7 +169,7 @@ int abrirDia(){
 			{
 				if (!caixa[diaAtual].aberto)
 				{
-					caixa = (struct Caixa *)realloc(caixa, (diaAtual + 1)*sizeof(struct Caixa));
+					caixa = (struct Caixa *)realloc(caixa, (diaAtual+1)*sizeof(struct Caixa));
 					caixa[diaAtual].diaAtual = diaAtual + 1;
 					caixa[diaAtual].aberto = true;
 					caixa[diaAtual].numVendaDia = 0;
@@ -159,6 +177,8 @@ int abrirDia(){
 					caixa[diaAtual].entradaDiaria = 0;
 					printf("\n***Caixa Aberto***\n      Id: %d\n", caixa[diaAtual].diaAtual);
 					system("pause");
+					salvaCaixaArq();
+					escreveVarGlobais("idCaixa.txt", diaAtual);
 					return 1;
 				}
 				else
@@ -204,10 +224,11 @@ void verificarCaixa(){
 		else
 		{
 			printf("desabilitado");
-			if (confirmacao("\nDeseja ir para tela de Lucro? (Y/N)" , 'Y', comMensagemDeErro,true))
+			if (confirmacao("\nDeseja ir ao menu de Lucro? (Y/N)" , 'Y', comMensagemDeErro,true))
 			{
 				if (menuAlterarTaxa())
 				{
+					escreveVarGlobaisFloat("txLucro.txt", lucroProd);
 					error("Taxa cadastrada com sucesso");
 				}
 			}
@@ -257,14 +278,21 @@ void fechaCaixa(){
 			printf("desabilitado");
 
 		}
-		printf("\nTotal diário: %.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
+		printf("\nTotal diário: R$%.2f\n", caixa[diaAtual].entradaDiaria + caixa[diaAtual].totalVendaDia);
 		
 		if (confirmacao("Confirma Fechamento Diário? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			caixa[diaAtual].aberto = false;
 			diaAtual++;
+			
 			caixa[diaAtual].aberto = false;
-			error("Caixa Fechado");
+			caixa[diaAtual].entradaDiaria = 0;
+			caixa[diaAtual].totalVendaDia = 0;
+			if (salvaCaixaArq())
+			{
+				escreveVarGlobais("idCaixa.txt", diaAtual);
+				error("Caixa Fechado");
+			}
 		}
 		else
 		{
@@ -285,26 +313,38 @@ void fechaCaixa(){
 }
 
 int consultaSaldoCaixa(){
-
 	if (diaAtual >= 0)
 	{
-		int i = 0;
-		float total = 0, entrada = 0 , saida = 0 ;
-
-		for (i = 0 ; i <= diaAtual ; i++)
+		if (!caixa[diaAtual].aberto && diaAtual == 0)
 		{
-			entrada += caixa[i].entradaDiaria;
-			saida += caixa[i].totalVendaDia;
-			total += caixa[i].entradaDiaria + caixa[i].totalVendaDia;
+			if (confirmacao("Não existe um caixa cadastrado, deseja ir para Abertura de Caixa? (Y/N)", 'Y', comMensagemDeErro, true))
+			{
+				abrirDia();
+			}
+			else
+			{
+				return 0;
+			}
 		}
+		else
+		{
+			int i = 0;
+			float total = 0, entrada = 0, saida = 0;
 
-		system("cls");
-		printf("\n");
-		printf("# Saldo de gastos com compras da conveniencia: R$%.2f\n", entrada);
-		printf("# Saldo de vendas da conveniencia: R$%.2f\n\n", saida);
-		printf("# Saldo geral da conveniencia: R$%.2f\n\n\n", total);
-		system("pause");
+			for (i = 0; i <= diaAtual; i++)
+			{
+				entrada += caixa[i].entradaDiaria;
+				saida += caixa[i].totalVendaDia;
+				total += caixa[i].entradaDiaria + caixa[i].totalVendaDia;
+			}
 
+			system("cls");
+			printf("\n");
+			printf("# Saldo de gastos com compras da conveniencia: R$%.2f\n", entrada);
+			printf("# Saldo de vendas da conveniencia: R$%.2f\n\n", saida);
+			printf("# Saldo geral da conveniencia: R$%.2f\n\n\n", total);
+			system("pause");
+		}
 	}
 	else
 	{
@@ -320,10 +360,29 @@ int consultaSaldoCaixa(){
 }
 
 
+
 bool getCaixa(){
 
 	if (diaAtual < 0) return false;
 	else if (!caixa[diaAtual].aberto) return false;
 	return true;
 }
+
+bool salvaCaixaArq(){
+
+	FILE * arq;
+	arq = fopen("caixa.bin", "wb");
+	if (arq != NULL)
+	{
+		fwrite(&caixa[0], sizeof(struct Caixa), diaAtual + 1, arq);
+		fclose(arq);
+		return true;
+	}
+	else
+	{
+		error("Erro ao salvar dados do Caixa Diario");
+		return false;
+	}
+}
+
 #endif

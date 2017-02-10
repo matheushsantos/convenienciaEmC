@@ -37,6 +37,7 @@ void exibirClientes();
 int setupCliente();
 void MenuCadastroCliente();     
 void MenuHistoricoCliente();
+bool salvaClienteArq();
 
 bool existeCpfCnpj(char * cpf, int * id); // id 0 para exibição de mensagem de invalidez
 bool existeMail(char * email, int * id); // id 0 para exibição de mensagem de invalidez
@@ -63,6 +64,7 @@ void funcaoClientes(){
 		printf("#         0 - Sair                                                            #\n");
 		printf("#                                                                             #\n");
 		printf("###############################################################################\n");
+		//printf("Valor Cli: %d", ClientesCadastrados);
 		leituraSwitch(leitura);
 
 		switch (leitura[0])
@@ -118,7 +120,7 @@ void MenuCadastroCliente() {
 
 
 		//############################## ALOCANDO MEMÓRIA##############################################
-		if (ClientesCadastrados == 0)
+		if (ClientesCadastrados == 0 && !sessaoArquivo)
 		{
 			Cli = (struct Clientes *)malloc(sizeof(struct Clientes));
 
@@ -139,6 +141,10 @@ void MenuCadastroCliente() {
 		if (Cli[ClientesCadastrados].NomeCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].NomeCliente) <= 2))  break;
 		if (!validaNomeClie(Cli[ClientesCadastrados].NomeCliente, comMensagemDeErro)) break;
 
+		char *pos;
+		if ((pos = strchr(Cli[ClientesCadastrados].NomeCliente, '\n')) != NULL)
+			*pos = '\0';
+
 		/*DEIXANDO MAIUSCULO*/
 		convertToUpper(Cli[ClientesCadastrados].NomeCliente);
 
@@ -150,6 +156,16 @@ void MenuCadastroCliente() {
 		if (Cli[ClientesCadastrados].emailCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].emailCliente) <= 2 ))  break;
 		if (!validaEmail(Cli[ClientesCadastrados].emailCliente, comMensagemDeErro)) break;
 
+		/*Remove quebra de linha*/
+		if ((pos = strchr(Cli[ClientesCadastrados].emailCliente, '\n')) != NULL)
+			*pos = '\0';
+
+
+		if (!existeMail(Cli[ClientesCadastrados].emailCliente, 0)){
+			error("Cadastro Invalidado");
+			break;
+		}
+
 		/*Telefone do Cliente*/
 		printf("\n**Somente Numeros**\nInsira o telefone do cliente: ");
 		fflush(stdin);
@@ -157,26 +173,39 @@ void MenuCadastroCliente() {
 		if (Cli[ClientesCadastrados].TelefoneCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].TelefoneCliente) <= 2))  break;
 		if (!validaTel(Cli[ClientesCadastrados].TelefoneCliente, comMensagemDeErro)) break;
 
+
+		if ((pos = strchr(Cli[ClientesCadastrados].TelefoneCliente, '\n')) != NULL)
+			*pos = '\0';
+
 		printf("\n**Somente Numeros**\nInsira o CPF/CNPJ do Cliente: ");
 		fflush(stdin);
 		fgets(Cli[ClientesCadastrados].CPFCliente,20, stdin);
 		if (Cli[ClientesCadastrados].CPFCliente[0] == 'x' && (strlen(Cli[ClientesCadastrados].CPFCliente) <= 2))  break;
 		if (!validaCpfCnpj(Cli[ClientesCadastrados].CPFCliente, comMensagemDeErro)) break;
-		
-			if (existeMail(Cli[ClientesCadastrados].emailCliente, 0) && existeCpfCnpj(Cli[ClientesCadastrados].CPFCliente, 0))
+
+		if ((pos = strchr(Cli[ClientesCadastrados].CPFCliente, '\n')) != NULL)
+					*pos = '\0';
+
+			if (existeCpfCnpj(Cli[ClientesCadastrados].CPFCliente, 0))
 			{
 				
+				
+
 				Cli[ClientesCadastrados].IDCliente = ClientesCadastrados + 1;
 				Cli[ClientesCadastrados].TotalGasto = 0;
 				Cli[ClientesCadastrados].TotalVendas = 0;
 				system("cls");
 				printf("\nID:\t%d\n", Cli[ClientesCadastrados].IDCliente);
-				printf("Nome:\t%s", Cli[ClientesCadastrados].NomeCliente);
-				printf("CPF:\t%s", Cli[ClientesCadastrados].CPFCliente);
+				printf("Nome:\t%s\n", Cli[ClientesCadastrados].NomeCliente);
+				printf("CPF:\t%s\n", Cli[ClientesCadastrados].CPFCliente);
 				printf("E-mail:\t%s\n\n", Cli[ClientesCadastrados].emailCliente);
 				printf("***********Cadastro concluído com sucesso***********\n\n");
 				//system("pause");
 				ClientesCadastrados++ ;
+				if (salvaClienteArq())
+				{
+					escreveVarGlobais("numCli.txt", ClientesCadastrados);
+				}
 			}
 			else
 			{
@@ -197,17 +226,22 @@ void consultaSaldo(){
 		int   id = -1;
 		int * pont = &id;
 		char busca[100];
+		char *pos;
 		printf("\nInsira o CPF/CNPJ ou Email do Cliente: \n");
 		fflush(stdin);
 		fgets(busca, 100, stdin);
+
+		
+		if ((pos = strchr(busca, '\n')) != NULL)
+			*pos = '\0';
 
 		if (!existeCpfCnpj(busca, pont) || !existeMail(busca, pont))
 		{
 			system("cls");
 			id = *pont;
 			printf("\n\nId: %d\n", Cli[id].IDCliente);
-			printf("Nome: %s", Cli[id].NomeCliente);
-			printf("CPF/CNPJ: %s", Cli[id].CPFCliente);
+			printf("Nome: %s\n", Cli[id].NomeCliente);
+			printf("CPF/CNPJ: %s\n", Cli[id].CPFCliente);
 			printf("Saldo: R$%.2f\n\n\n", Cli[id].TotalGasto);
 
 			system("pause");
@@ -238,12 +272,12 @@ void exibirClientes(){
 		printf("Listagem geral das informações cadastradas de Clientes:\n\n");
 		for (i = 0; i < id; i++)
 		{
-			printf("Nome: %s", Cli[i].NomeCliente);
+			printf("Nome: %s\n", Cli[i].NomeCliente);
 			printf("Id: %d\n", Cli[i].IDCliente);
-			printf("CPF/CNPJ: %s", Cli[i].CPFCliente);
-			printf("Email: %s", Cli[i].emailCliente);
+			printf("CPF/CNPJ: %s\n", Cli[i].CPFCliente);
+			printf("Email: %s\n", Cli[i].emailCliente);
 			printf("Telefone: %s\n", Cli[i].TelefoneCliente);
-			printf("Informações sobre Vendas do(a): %s \n", Cli[i].NomeCliente);
+			printf("Informações sobre Vendas do(a): %s\n \n", Cli[i].NomeCliente);
 			printf("Valor saldo gasto: R$%.2f\n", Cli[i].TotalGasto);
 			printf("Numero de vendas: %d\n", Cli[i].TotalVendas);
 
@@ -277,6 +311,7 @@ int setupCliente()
 		printf("#   É possivel por regra alterar valor default da régua de desconto para      #\n");
 		printf("#    todos os clientes fidelidade cadastrados e também o percentual de        #\n");
 		printf("#   descontos que os clientes terão para compras apartir desse saldo.         #\n");
+		printf("#   Para anular algum dos planos abaixo para setar o valor desc. para 0       #\n");
 		printf("#                                                                             #\n");
 		printf("#     ---------------------  Painel de desconto  ------------------           #\n");
 		printf("#     /  Acima de R$%2.f\tgastos         %.1f%%\tdesc.\t  /           #\n", descUm, percUm);
@@ -286,7 +321,7 @@ int setupCliente()
 		printf("#     -------------------------------------------------------------           #\n");
 		printf("###############################################################################\n");
 
-		if (confirmacao("Deseja alterar valores padronizados? (Y/N)", 'Y', comMensagemDeErro,true))
+		if (confirmacao("Deseja alterar valores default? (Y/N)", 'Y', comMensagemDeErro,true))
 		{
 			system("cls");
 			printf("Informe o valor a ser alterado:\n\n");
@@ -295,7 +330,7 @@ int setupCliente()
 			printf("1- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descUm, percUm);
 			printf("2- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descDois, percDois);
 			printf("3- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descTres, percTres);
-			printf("4- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n", descQuat, percQuat);
+			printf("4- Acima de R$%2.f\tgastos    %.1f%%\tdesc.\n\n\n", descQuat, percQuat);
 			leituraSwitch(auxDes);
 
 			switch (auxDes[0])
@@ -348,7 +383,11 @@ bool existeCpfCnpj(char * cpf, int * id){
 		{
 			if (id == 0)
 			{
-				error( strcat("O CPF/CNPJ informado já esta cadastrado para o Cliente: ", Cli[i].NomeCliente) );
+				
+				printf("**O CPF/CNPJ informado já esta cadastrado para o Cliente:\n");
+				printf("Nome: %s \nId: %d\n\n", Cli[i].NomeCliente, Cli[i].IDCliente);
+				system("pause");
+				return false;
 			}
 
 			*id = i; 
@@ -371,7 +410,10 @@ bool existeMail(char * email, int * id){
 			
 			if (id == 0)
 			{
-				error( strcat("O EMAIL informado já esta cadastrado para o Cliente: ", Cli[i].NomeCliente) ) ;
+				printf("**O Email informado já esta cadastrado para o Cliente:\n");
+				printf("Nome: %s \nId: %d\n\n", Cli[i].NomeCliente, Cli[i].IDCliente);
+				system("pause");
+				return false;
 			}
 			 * id =  i ;
 			 // passando o ID do cliente cujo dado foi encontrado
@@ -386,7 +428,7 @@ bool alteraDescontosCli(char numero){
 
 	float auxDesconto, auxPercentual;
 
-	printf("Insira novo valor da régua: ");
+	printf("Insira novo valor da régua (R$): ");
 	scanf_s("%f", &auxDesconto);
 	if (auxDesconto < 0)
 	{
@@ -394,7 +436,7 @@ bool alteraDescontosCli(char numero){
 		return false;
 	}
 
-	printf("Insira novo valor do percentual: ");
+	printf("Insira novo valor do percentual (%%): ");
 	scanf_s("%f", &auxPercentual);
 	if (auxPercentual < 0)
 	{
@@ -410,22 +452,29 @@ bool alteraDescontosCli(char numero){
 		{
 			descUm = auxDesconto;
 			percUm = auxPercentual;
-
+			escreveVarGlobaisFloat("cli\\desc1.txt",descUm);
+			escreveVarGlobaisFloat("cli\\perc1.txt", percUm);
 		}
 		else if (numero == '2')
 		{
 			descDois = auxDesconto;
 			percDois = auxPercentual;
+			escreveVarGlobaisFloat("cli\\desc2.txt", descDois);
+			escreveVarGlobaisFloat("cli\\perc2.txt", percDois);
 		}
 		else if (numero == '3')
 		{
 			descTres = auxDesconto;
 			percTres = auxPercentual;
+			escreveVarGlobaisFloat("cli\\desc3.txt", descTres);
+			escreveVarGlobaisFloat("cli\\perc3.txt", percTres);
 		}
 		else if (numero == '4')
 		{
 			descQuat = auxDesconto;
 			percQuat = auxPercentual;
+			escreveVarGlobaisFloat("cli\\desc4.txt", descQuat);
+			escreveVarGlobaisFloat("cli\\perc4.txt", percQuat);
 		}
 		else
 		{
@@ -441,5 +490,78 @@ bool alteraDescontosCli(char numero){
 	}
 	return false;
 }
+
+
+bool salvaClienteArq(){
+
+	FILE * arq;
+	arq = fopen("clientes.bin", "wb");
+	if (arq != NULL)
+	{
+		fwrite(&Cli[0], sizeof(struct Clientes), ClientesCadastrados, arq);
+		fclose(arq);
+		return true;
+	}
+	else
+	{
+		error("Erro ao salvar dados");
+		return false;
+	}
+
+}
+
+void importaDescontosCli(){
+	float aux = 0 ;
+	aux = varIntGlobaisFloat("cli\\desc1.txt");
+//	printf("\nAux Desc1: %f\n", aux);
+	if (aux != -1)
+	{
+		descUm = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\desc2.txt");
+//	printf("\nAux Desc2: %f\n", aux);
+	if (aux != -1)
+	{
+		descDois = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\desc3.txt");
+//	printf("\nAux Desc3: %f\n", aux);
+	if (aux != -1)
+	{
+		descTres = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\desc4.txt");
+//	printf("\nAux Desc4: %f\n", aux);
+	if (aux != -1)
+	{
+		descQuat = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\perc1.txt");
+//	printf("\nAux Per1: %f\n", aux);
+	if (aux != -1)
+	{
+		percUm = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\perc2.txt");
+//	printf("\nAux Per2: %f\n", aux);
+	if (aux != -1)
+	{
+		percDois = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\perc3.txt");
+//	printf("\nAux Per3: %f\n", aux);
+	if (aux != -1)
+	{
+		percTres = aux;
+	}
+	aux = varIntGlobaisFloat("cli\\perc4.txt");
+//	printf("\nAux Per1: %f\n", aux);
+	if (aux != -1)
+	{
+		percQuat = aux;
+	}
+}
+
+
 
 #endif

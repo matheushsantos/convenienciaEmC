@@ -16,7 +16,7 @@
 
 #define comMensagemDeErro true
 #define semMensagemDeErro false
-
+bool  sessaoArquivo = false;
 bool leituraSwitch(char * string);
 
 /*Variaves globais*/
@@ -298,11 +298,11 @@ bool  menuAlterarTaxa()
 
 		if (confirmacao("Taxa não cadastrada, deseja cadastrar uma taxa de lucro? (Y/N)", 'Y', comMensagemDeErro, true))
 		{
-			printf("Insira o percentual da taxa: (Ex. 20,2 = 20,2%%): ");
+			printf("Insira o percentual da taxa: (Ex. 20.2 = 20.2%%): ");
 			scanf_s("%f", &auxTaxa);
 			if (auxTaxa > 0)
 			{
-				printf("Confirma inclusao de: %.2f%% de taxa (Y/N)\n", auxTaxa);
+				printf("Confirma inclusao de: %.2f%% de taxa ?(Y/N)\n", auxTaxa);
 				if (confirmacao("", 'Y', semMensagemDeErro, true))
 				{
 					lucroProd = auxTaxa / 100;
@@ -330,7 +330,7 @@ bool  menuAlterarTaxa()
 		printf("\nValor da Taxa atual: %.2f%%\nDeseja alterar valor atual? (Y/N)\n", lucroProd * 100);
 		if (confirmacao("", 'Y', semMensagemDeErro, true))
 		{
-			printf("Insira novo valor de taxa: (Ex. 2,2 = 2,2%%): ");
+			printf("Insira novo valor de taxa: (Ex. 2.2 = 2.2%%): ");
 			scanf_s("%f", &auxTaxa);
 			if (auxTaxa > 0)
 			{
@@ -358,6 +358,133 @@ bool  menuAlterarTaxa()
 		}
 	}
 	false;
+}
+
+
+bool limparArquivo(char * nomedoArquivo)
+{
+	FILE * arq;
+	arq = fopen(nomedoArquivo, "w");
+	if (arq != NULL)
+	{
+		fclose(arq);
+		return true;
+	}
+	else
+	{
+		fclose(arq);
+			return false;
+	}
+}
+
+int varIntGlobais(char * nomeArquivo){
+	int x = -1, i = 0;
+	FILE * arq;
+	arq = fopen(nomeArquivo, "r");
+	if (arq != NULL)
+	{
+		while (feof(arq) == 0)
+		{
+			fscanf(arq, "%d", &x);
+		}
+	}
+	else
+	{
+		error("Erro ao recuperar varivaveis de controle");
+	}
+	return x;
+}
+
+float varIntGlobaisFloat(char * nomeArquivo){
+	float x = -1, i = 0;
+	FILE * arq;
+	arq = fopen(nomeArquivo, "r");
+	if (arq != NULL)
+	{
+		while (feof(arq) == 0)
+		{
+			fscanf(arq, "%f", &x);
+		}
+	}
+	else
+	{
+		error("Erro ao recuperar varivaveis de controle");
+	}
+	return x;
+}
+
+bool escreveVarGlobais(char * nomeArquivo, int value)
+{
+	FILE * arq;
+	arq = fopen(nomeArquivo, "w");
+	if (arq != NULL)
+	{
+
+			fprintf(arq, "%d\r", value);
+
+		fclose(arq);
+		return true;
+	}
+	else
+	{
+		fclose(arq);
+		return false;
+	}
+}
+bool escreveVarGlobaisFloat(char * nomeArquivo, float value)
+{
+	FILE * arq;
+	arq = fopen(nomeArquivo, "w");
+	if (arq != NULL)
+	{
+
+		fprintf(arq, "%f\r", value);
+
+		fclose(arq);
+		return true;
+	}
+	else
+	{
+		fclose(arq);
+		return false;
+	}
+}
+
+void truncaArquivos(){
+	FILE * arq;
+	limparArquivo("idCaixa.txt");
+	limparArquivo("numCli.txt");
+	limparArquivo("idProduto.txt");
+	limparArquivo("txLucro.txt");
+
+	escreveVarGlobais("idCaixa.txt", -1);
+	escreveVarGlobais("numCli.txt", 0);
+	escreveVarGlobais("idProduto.txt", 0);
+	escreveVarGlobaisFloat("txLucro.txt", 0);
+
+	escreveVarGlobaisFloat("cli\\desc1.txt", -1);
+	escreveVarGlobaisFloat("cli\\perc1.txt", -1);
+	escreveVarGlobaisFloat("cli\\desc2.txt", -1);
+	escreveVarGlobaisFloat("cli\\perc2.txt", -1);
+	escreveVarGlobaisFloat("cli\\desc3.txt", -1);
+	escreveVarGlobaisFloat("cli\\perc3.txt", -1);
+	escreveVarGlobaisFloat("cli\\desc4.txt", -1);
+	escreveVarGlobaisFloat("cli\\perc4.txt", -1);
+
+
+	arq = fopen("produtos.bin", "wb");
+	fcloseall;
+	arq = fopen("clientes.bin", "wb");
+	fcloseall;
+	arq = fopen("caixa.bin", "wb");
+	fcloseall;
+
+}
+
+void gravando(){
+
+
+
 }
 
 
